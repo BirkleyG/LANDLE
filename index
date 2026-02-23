@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Country Guessing Game</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; background: #0b1220; color: #e7eefc; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
+    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 18px; }
+    h1 { font-size: 22px; margin: 0 0 10px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .pill { padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.16); background: rgba(0,0,0,0.18); font-size: 13px; }
+    .clue { font-size: 18px; margin: 14px 0; line-height: 1.4; }
+    .masked { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 22px; letter-spacing: 2px; }
+    input[type="text"] {
+      width: min(420px, 100%);
+      padding: 12px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.25);
+      color: #e7eefc;
+      outline: none;
+    }
+    button {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.10);
+      color: #e7eefc;
+      cursor: pointer;
+    }
+    button:hover { background: rgba(255,255,255,0.16); }
+    .msg { margin-top: 12px; min-height: 24px; color: #cfe0ff; }
+    .bad { color: #ffb4b4; }
+    .good { color: #b8ffcf; }
+    .small { font-size: 13px; opacity: 0.9; }
+    .footer { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>🌍 Country Guessing Game</h1>
+
+      <div class="row">
+        <div class="pill" id="roundPill">Round 1</div>
+        <div class="pill">Streak: <span id="streak">0</span></div>
+        <div class="pill">Correct: <span id="correct">0</span></div>
+        <div class="pill">Played: <span id="played">0</span></div>
+      </div>
+
+      <div class="clue" id="clueText"></div>
+      <div class="masked" id="maskedName" style="display:none;"></div>
+
+      <div class="row" style="margin-top: 14px;">
+        <input
+          id="guessInput"
+          type="text"
+          inputmode="text"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          placeholder="Type the country name exactly…"
+        />
+        <button id="submitBtn">Guess</button>
+        <button id="skipBtn" title="Give up and reveal answer">Skip</button>
+      </div>
+
+      <div class="msg" id="msg"></div>
+
+      <div class="footer">
+        <button id="nextBtn" style="display:none;">Next Country</button>
+        <span class="small">No spellcheck, no “close enough” — exact match (case-insensitive).</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Minimal dataset (swap to "ALL countries" later) ---
+    // population is approximate; just for clues.
+    const COUNTRIES = [
+      { name: "Canada", capital: "Ottawa", population: "40M", flag: "🇨🇦" },
+      { name: "Brazil", capital: "Brasília", population: "203M", flag: "🇧🇷" },
+      { name: "Japan", capital: "Tokyo", population: "124M", flag: "🇯🇵" },
+      { name: "Kenya", capital: "Nairobi", population: "55M", flag: "🇰🇪" },
+      { name: "Norway", capital: "Oslo", population: "5.5M", flag: "🇳🇴" },
+    ];
+
+    // Game state
+    let current = null;
+    let round = 1; // 1 or 2
+    let revealedIndex = null;
+
+    let streak = 0;
+    let correct = 0;
+    let played = 0;
+
+    const el = (id) => document.getElementById(id);
+
+    function pickRandomCountry() {
+      return COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)];
+    }
+
+    function makeClue(country) {
+      // Choose one clue type per question (you can force one type if you want)
+      const types = ["flag", "capital", "population"];
+      const type = types[Math.floor(Math.random() * types.length)];
+
+      if (type === "flag") return `Clue: Flag → <strong>${country.flag}</strong>`;
+      if (type === "capital") return `Clue: Capital → <strong>${country.capital}</strong>`;
+      return `Clue: Population → <strong>${country.population}</strong>`;
+    }
+
+    function normalize(s) {
+      // Case-insensitive, trims spaces. (No fuzzy matching.)
+      return s.trim().toLowerCase();
+    }
+
+    function maskName(name, revealIdx) {
+      // Reveal only one letter (keep spaces/hyphens as-is)
+      const chars = name.split("");
+      return chars.map((ch, i) => {
+        if (ch === " " || ch === "-" || ch === "'") return ch;
+        if (i === revealIdx) return ch;
+        return "•";
+      }).join("");
+    }
+
+    function startNewQuestion() {
+      current = pickRandomCountry();
+      round = 1;
+      revealedIndex = null;
+
+      el("roundPill").textContent = "Round 1";
+      el("maskedName").style.display = "none";
+      el("maskedName").textContent = "";
+
+      el("clueText").innerHTML = makeClue(current);
+      el("msg").textContent = "";
+      el("msg").className = "msg";
+
+      el("guessInput").value = "";
+      el("guessInput").disabled = false;
+      el("submitBtn").disabled = false;
+      el("skipBtn").disabled = false;
+
+      el("nextBtn").style.display = "none";
+      el("guessInput").focus();
+    }
+
+    function endQuestion(revealedAnswer) {
+      played += 1;
+      el("played").textContent = String(played);
+
+      el("guessInput").disabled = true;
+      el("submitBtn").disabled = true;
+      el("skipBtn").disabled = true;
+
+      if (revealedAnswer) {
+        el("msg").innerHTML = `Answer: <strong>${current.name}</strong>`;
+      }
+
+      el("nextBtn").style.display = "inline-block";
+      el("nextBtn").focus();
+    }
+
+    function handleCorrect() {
+      correct += 1;
+      streak += 1;
+
+      el("correct").textContent = String(correct);
+      el("streak").textContent = String(streak);
+
+      el("msg").textContent = "✅ Correct!";
+      el("msg").className = "msg good";
+      endQuestion(false);
+    }
+
+    function handleWrong() {
+      if (round === 1) {
+        // Move to round 2: reveal one random letter index (letters only)
+        round = 2;
+        el("roundPill").textContent = "Round 2";
+
+        const name = current.name;
+        const viable = [];
+        for (let i = 0; i < name.length; i++) {
+          const ch = name[i];
+          if (ch !== " " && ch !== "-" && ch !== "'") viable.push(i);
+        }
+        revealedIndex = viable[Math.floor(Math.random() * viable.length)];
+
+        el("maskedName").style.display = "block";
+        el("maskedName").textContent = maskName(name, revealedIndex);
+
+        el("msg").textContent = "❌ Wrong. Round 2: one letter revealed.";
+        el("msg").className = "msg bad";
+        el("guessInput").value = "";
+        el("guessInput").focus();
+      } else {
+        // Final miss
+        streak = 0;
+        el("streak").textContent = String(streak);
+
+        el("msg").textContent = "❌ Wrong again.";
+        el("msg").className = "msg bad";
+        endQuestion(true);
+      }
+    }
+
+    function submitGuess() {
+      const guess = el("guessInput").value;
+      if (!guess.trim()) return;
+
+      if (normalize(guess) === normalize(current.name)) {
+        handleCorrect();
+      } else {
+        handleWrong();
+      }
+    }
+
+    // Events
+    el("submitBtn").addEventListener("click", submitGuess);
+    el("guessInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitGuess();
+    });
+    el("skipBtn").addEventListener("click", () => {
+      streak = 0;
+      el("streak").textContent = String(streak);
+      el("msg").textContent = "Skipped.";
+      el("msg").className = "msg";
+      endQuestion(true);
+    });
+    el("nextBtn").addEventListener("click", startNewQuestion);
+
+    // Start
+    startNewQuestion();
+  </script>
+</body>
+</html>

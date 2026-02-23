@@ -8,51 +8,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#080e1a; --surface:rgba(255,255,255,0.055); --border:rgba(255,255,255,0.10);
-      --text:#ddeeff; --muted:rgba(221,238,255,0.45);
-      --green:#4fffb0; --yellow:#ffe76a; --red:#ff6b6b; --accent:#5b8fff;
+      --bg:#080e1a;--surface:rgba(255,255,255,0.055);--border:rgba(255,255,255,0.10);
+      --text:#ddeeff;--muted:rgba(221,238,255,0.45);
+      --green:#4fffb0;--yellow:#ffe76a;--red:#ff6b6b;--accent:#5b8fff;
       font-family:'Syne',system-ui,sans-serif;
     }
     *,*::before,*::after{box-sizing:border-box;}
     body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;}
-    body::before{
-      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-      background-image:linear-gradient(rgba(91,143,255,0.04) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(91,143,255,0.04) 1px,transparent 1px);
-      background-size:40px 40px;
-    }
-    .wrap{
-      position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px;
-      display:grid;gap:16px;grid-template-columns:1.6fr 1fr;
-    }
+    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:linear-gradient(rgba(91,143,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(91,143,255,0.04) 1px,transparent 1px);
+      background-size:40px 40px;}
+    .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px;display:grid;gap:16px;grid-template-columns:1.6fr 1fr;}
     @media(max-width:900px){.wrap{grid-template-columns:1fr;}}
 
-    /* ── Header ── */
-    header{
-      grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-      padding:16px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);
-    }
-    header h1{
-      margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px;
-      background:linear-gradient(135deg,#5b8fff,#4fffb0);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    }
+    header{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);}
+    header h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .tagline{margin:0;font-size:12px;color:var(--muted);}
     .header-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-
-    /* Live score display */
-    .score-live{
-      display:flex;align-items:center;gap:10px;
-      padding:8px 16px;border-radius:12px;
-      background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);
-    }
-    .score-live .score-num{
-      font-family:'DM Mono',monospace;font-size:22px;font-weight:700;
-      color:var(--accent);transition:color 0.3s;min-width:48px;text-align:right;
-    }
-    .score-live .score-num.up{color:var(--green);}
-    .score-live .score-num.down{color:var(--red);}
-    .score-live .score-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+    .score-live{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);}
+    .score-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--accent);transition:color 0.4s;min-width:52px;text-align:right;}
+    .score-num.up{color:var(--green);}.score-num.down{color:var(--red);}
+    .score-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
 
     .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;}
     h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;}
@@ -61,39 +37,21 @@
     .stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
 
     /* ── Board ── */
-    .board-scroll{
-      max-height:72vh;overflow-y:auto;padding-right:4px;
-      scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;
-    }
+    .board-scroll{max-height:72vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;}
     .letter-group{margin-bottom:2px;}
-    .letter-hdr{
-      font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
-      color:var(--muted);padding:6px 6px 3px;margin-bottom:2px;
-      border-bottom:1px solid rgba(255,255,255,0.06);
-    }
-    .crow{
-      display:flex;align-items:center;padding:2px 4px;border-radius:8px;
-      transition:background 0.15s;min-height:24px;
-    }
+    .letter-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:6px 6px 3px;margin-bottom:2px;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .crow{display:flex;align-items:center;padding:2px 4px;border-radius:8px;transition:background 0.15s;min-height:26px;position:relative;}
     .crow:focus-within:not(.guessed){background:rgba(91,143,255,0.08);}
     .crow.guessed{background:rgba(79,255,176,0.07);}
-    .pfx{
-      font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;
-      color:var(--text);flex-shrink:0;user-select:none;white-space:pre;
-    }
+    .crow.missed{background:rgba(255,107,107,0.04);}
+    /* Spotlight highlight during animation */
+    .crow.animating{background:rgba(91,143,255,0.15);box-shadow:0 0 0 1px rgba(91,143,255,0.3);}
+
+    .pfx{font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;color:var(--text);flex-shrink:0;user-select:none;white-space:pre;}
     .inp-wrap{flex:1;min-width:0;position:relative;height:20px;}
-    .cinput{
-      position:absolute;inset:0;width:100%;padding:0;
-      background:transparent;border:none;outline:none;
-      font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;
-      color:var(--text);caret-color:var(--accent);z-index:2;
-    }
+    .cinput{position:absolute;inset:0;width:100%;padding:0;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;color:var(--text);caret-color:var(--accent);z-index:2;}
     .cinput:disabled{cursor:default;}
-    .ghost{
-      position:absolute;inset:0;display:flex;align-items:center;
-      font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;
-      pointer-events:none;white-space:pre;overflow:hidden;z-index:1;
-    }
+    .ghost{position:absolute;inset:0;display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;pointer-events:none;white-space:pre;overflow:hidden;z-index:1;}
     .gh-typed{visibility:hidden;}
     .gh-rem span{padding:0 1px;border-radius:3px;}
     .gh-rem .g{background:rgba(79,255,176,0.28);border:1px solid rgba(79,255,176,0.5);}
@@ -103,105 +61,97 @@
     .gh-rem .k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
     .badge{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;padding-left:6px;white-space:nowrap;}
     .guessed .badge{color:var(--green);}
+    .missed .badge{color:var(--red);}
 
-    /* ── Right panel ── */
-    button{
-      padding:9px 16px;border-radius:10px;border:1px solid var(--border);
-      background:rgba(255,255,255,0.08);color:var(--text);cursor:pointer;
-      font-size:13px;font-family:'Syne',sans-serif;font-weight:700;
-      transition:all 0.15s;letter-spacing:0.3px;
+    /* ── Reveal tiles (replace input during animation) ── */
+    .reveal-tiles{display:flex;gap:2px;align-items:center;flex-wrap:wrap;}
+    .rtile{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:14px;height:18px;padding:0 2px;
+      font-family:'DM Mono',monospace;font-size:12px;font-weight:700;
+      border-radius:3px;border:1px solid transparent;
+      background:rgba(255,255,255,0.08);
+      transform:rotateX(90deg) scale(0.8);
+      transition:transform 0.18s ease, background 0.18s, border-color 0.18s;
+      transform-origin:center;
     }
+    .rtile.flipped{transform:rotateX(0deg) scale(1);}
+    .rtile.g{background:rgba(79,255,176,0.32);border-color:rgba(79,255,176,0.6);color:var(--text);}
+    .rtile.y{background:rgba(255,231,106,0.32);border-color:rgba(255,231,106,0.6);color:var(--text);}
+    .rtile.r{background:rgba(255,107,107,0.32);border-color:rgba(255,107,107,0.6);color:var(--text);}
+    .rtile.w{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.35);color:rgba(221,238,255,0.5);}
+    .rtile.k{background:rgba(40,40,60,0.6);border-color:rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
+
+    /* ── Score float ── */
+    .score-float{
+      position:fixed;font-family:'DM Mono',monospace;font-size:15px;font-weight:800;
+      pointer-events:none;z-index:300;opacity:1;
+      transition:opacity 0.7s ease, transform 0.7s ease;
+    }
+    .score-float.gone{opacity:0;transform:translateY(-48px) scale(1.2);}
+
+    /* ── History tooltip ── */
+    .hist-btn{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);color:var(--muted);font-size:9px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;padding:0;transition:background 0.15s;position:relative;font-family:'Syne',sans-serif;}
+    .hist-btn:hover{background:rgba(255,255,255,0.15);}
+    .hist-tip{display:none;position:absolute;right:0;top:20px;z-index:50;background:#0f1a2e;border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:8px 10px;min-width:180px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.6);font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap;}
+    .hist-btn:hover .hist-tip,.hist-btn:focus .hist-tip{display:block;}
+    .hist-tip .ht-row{display:flex;gap:2px;align-items:center;padding:2px 0;}
+    .hist-tip .ht-ch{padding:1px 3px;border-radius:3px;font-size:11px;}
+    .hist-tip .ht-ch.g{background:rgba(79,255,176,0.3);border:1px solid rgba(79,255,176,0.6);}
+    .hist-tip .ht-ch.y{background:rgba(255,231,106,0.3);border:1px solid rgba(255,231,106,0.6);}
+    .hist-tip .ht-ch.r{background:rgba(255,107,107,0.3);border:1px solid rgba(255,107,107,0.6);}
+    .hist-tip .ht-ch.w{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);color:rgba(221,238,255,0.5);}
+    .hist-tip .ht-ch.k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.5);color:rgba(221,238,255,0.4);}
+    .hist-tip-hdr{font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
+
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a0a0a;border:1px solid rgba(255,107,107,0.5);color:#ffb3b3;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:200;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    /* ── Buttons / Controls ── */
+    button{padding:9px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.08);color:var(--text);cursor:pointer;font-size:13px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;letter-spacing:0.3px;}
     button:hover:not(:disabled){background:rgba(255,255,255,0.15);}
     button:disabled{opacity:0.35;cursor:not-allowed;}
     button.primary{background:rgba(91,143,255,0.22);border-color:rgba(91,143,255,0.45);color:#a8c4ff;}
     button.primary:hover:not(:disabled){background:rgba(91,143,255,0.35);}
     .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-    .err-banner{
-      padding:10px 12px;border-radius:10px;margin-bottom:8px;
-      border:1px solid rgba(255,107,107,0.3);background:rgba(255,80,80,0.1);
-      color:#ffd0d0;font-size:13px;display:none;
-    }
+    .err-banner{padding:10px 12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(255,107,107,0.3);background:rgba(255,80,80,0.1);color:#ffd0d0;font-size:13px;display:none;}
     .round-progress{display:flex;gap:5px;align-items:center;}
     .round-dot{width:9px;height:9px;border-radius:999px;background:var(--border);transition:background 0.3s;}
-    .round-dot.active{background:var(--accent);}
-    .round-dot.done{background:var(--green);}
+    .round-dot.active{background:var(--accent);}.round-dot.done{background:var(--green);}
     .legend{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;align-items:center;}
     .ls{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:3px;vertical-align:middle;}
-    .lg{background:rgba(79,255,176,0.5);}
-    .ly{background:rgba(255,231,106,0.5);}
-    .lr{background:rgba(255,107,107,0.5);}
-    .lw{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);}
+    .lg{background:rgba(79,255,176,0.5);}.ly{background:rgba(255,231,106,0.5);}
+    .lr{background:rgba(255,107,107,0.5);}.lw{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);}
     .lk{background:rgba(40,40,60,0.8);border:1px solid rgba(120,120,160,0.5);}
 
-    /* ── Modals (shared) ── */
-    .modal-backdrop{
-      position:fixed;inset:0;z-index:100;
-      background:rgba(8,14,26,0.85);backdrop-filter:blur(8px);
-      display:flex;align-items:center;justify-content:center;
-      opacity:0;pointer-events:none;transition:opacity 0.22s;
-    }
+    /* ── Modals ── */
+    .modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(8,14,26,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.22s;}
     .modal-backdrop.open{opacity:1;pointer-events:all;}
-    .modal{
-      background:#0f1a2e;border:1px solid rgba(255,255,255,0.15);
-      border-radius:20px;padding:32px 36px;min-width:300px;max-width:460px;
-      width:92%;text-align:center;
-      transform:translateY(14px) scale(0.97);
-      transition:transform 0.22s;
-      box-shadow:0 28px 70px rgba(0,0,0,0.7);
-    }
+    .modal{background:#0f1a2e;border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px 36px;min-width:300px;max-width:480px;width:92%;text-align:center;transform:translateY(14px) scale(0.97);transition:transform 0.22s;box-shadow:0 28px 70px rgba(0,0,0,0.7);}
     .modal-backdrop.open .modal{transform:translateY(0) scale(1);}
     .modal-title{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);}
-    .modal-heading{
-      font-size:22px;font-weight:800;margin-bottom:20px;
-      background:linear-gradient(135deg,#5b8fff,#4fffb0);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    }
+    .modal-heading{font-size:22px;font-weight:800;margin-bottom:20px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .mstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;}
     .mstat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:14px 8px;}
     .mstat .num{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;}
     .mstat .lbl{font-size:11px;color:var(--muted);margin-top:4px;}
-    .mstat.mc .num{color:var(--green);}
-    .mstat.mw .num{color:var(--red);}
-    .mstat.mb .num{color:var(--muted);}
-
-    /* Points animation */
-    .pts-delta{
-      font-size:32px;font-weight:800;margin:6px 0 4px;
-      font-family:'DM Mono',monospace;
-      opacity:0;transform:scale(0.6);
-      transition:opacity 0.35s,transform 0.35s;
-    }
+    .mstat.mc .num{color:var(--green);}.mstat.mw .num{color:var(--red);}.mstat.mb .num{color:var(--muted);}
+    .pts-delta{font-size:36px;font-weight:800;margin:6px 0 4px;font-family:'DM Mono',monospace;opacity:0;transform:scale(0.6);transition:opacity 0.35s,transform 0.35s;}
     .pts-delta.show{opacity:1;transform:scale(1);}
-    .pts-delta.pos{color:var(--green);}
-    .pts-delta.neg{color:var(--red);}
+    .pts-delta.pos{color:var(--green);}.pts-delta.neg{color:var(--red);}
     .pts-breakdown{font-size:12px;color:var(--muted);margin-bottom:16px;min-height:18px;}
     .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
     .modal-sub b{color:var(--text);}
-
-    .modal-close{
-      width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;
-      background:linear-gradient(135deg,rgba(91,143,255,0.3),rgba(79,255,176,0.2));
-      border:1px solid rgba(91,143,255,0.4);color:var(--text);
-      font-size:15px;font-family:'Syne',sans-serif;font-weight:700;
-      transition:all 0.15s;letter-spacing:0.3px;
-    }
+    .modal-close{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(91,143,255,0.4);cursor:pointer;background:linear-gradient(135deg,rgba(91,143,255,0.3),rgba(79,255,176,0.2));color:var(--text);font-size:15px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;}
     .modal-close:hover{background:linear-gradient(135deg,rgba(91,143,255,0.45),rgba(79,255,176,0.3));}
-
-    /* Final score modal extras */
-    .final-score-num{
-      font-size:56px;font-weight:800;font-family:'DM Mono',monospace;
-      line-height:1;margin:8px 0 4px;color:var(--accent);
-    }
-    .final-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0;}
+    .final-score-num{font-size:56px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin:8px 0 4px;color:var(--accent);}
+    .final-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;}
     .final-stat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;text-align:left;}
     .final-stat .fs-num{font-size:20px;font-weight:800;font-family:'DM Mono',monospace;}
     .final-stat .fs-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
-    .share-card{
-      white-space:pre;padding:14px;border-radius:12px;margin-top:14px;
-      border:1px solid var(--border);background:rgba(0,0,0,0.3);
-      font-family:'DM Mono',monospace;font-size:12px;line-height:1.7;
-      text-align:left;
-    }
+    .share-card{white-space:pre;padding:14px;border-radius:12px;margin-top:14px;border:1px solid var(--border);background:rgba(0,0,0,0.3);font-family:'DM Mono',monospace;font-size:12px;line-height:1.7;text-align:left;}
+    .crow.missed .pfx{color:rgba(221,238,255,0.55);}
   </style>
 </head>
 <body>
@@ -215,15 +165,12 @@
       <div class="pill" id="roundPill">Round <b>1</b> / 4</div>
       <div class="pill">Letters: <b><span id="revealPill">1</span></b></div>
       <div class="round-progress" id="roundDots"></div>
-      <div class="score-live">
-        <div>
-          <div class="score-lbl">Score</div>
-          <div class="score-num" id="liveScore">0</div>
-        </div>
+      <div class="score-live" id="scoreLiveEl">
+        <div class="score-lbl">Score</div>
+        <div class="score-num" id="liveScore">0</div>
       </div>
     </div>
   </header>
-
   <div class="card">
     <div class="stats-row">
       <div class="pill">Guessed: <b><span id="guessedCount">0</span></b> / <span id="totalCount">195</span></div>
@@ -232,7 +179,6 @@
     </div>
     <div class="board-scroll" id="board"></div>
   </div>
-
   <div class="card">
     <h2>Controls</h2>
     <div class="btn-row">
@@ -248,14 +194,15 @@
       <span><span class="ls lw"></span>missing</span>
       <span><span class="ls lk"></span>extra</span>
     </div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.6;">
-      <b style="color:var(--text)">Scoring:</b> Correct R1 +5 · R2 +3 · R3 +1 · R4 +0<br>
-      Wrong: each 🟥 −2 · each 🟨⬜⬛ −1 · Unguessed at end −3
+    <div style="font-size:11px;color:var(--muted);line-height:1.7;">
+      <b style="color:var(--text)">Scoring:</b> R1 +5 · R2 +3 · R3 +1 · R4 +0<br>
+      Nonsense guesses: rejected &amp; −1 pt · Unguessed at end: −3 each
     </div>
   </div>
 </div>
 
-<!-- Round summary modal -->
+<div class="toast" id="toast"></div>
+
 <div class="modal-backdrop" id="roundModal">
   <div class="modal">
     <p class="modal-title">Round Complete</p>
@@ -272,9 +219,8 @@
   </div>
 </div>
 
-<!-- Final score modal -->
 <div class="modal-backdrop" id="finalModal">
-  <div class="modal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto;">
     <p class="modal-title">Game Over</p>
     <div class="modal-heading">Final Score</div>
     <div class="final-score-num" id="finalScoreNum">0</div>
@@ -286,7 +232,10 @@
       <div class="final-stat"><div class="fs-num" style="color:var(--muted)" id="f4">0</div><div class="fs-lbl">⬛ R4 (+0)</div></div>
       <div class="final-stat" style="grid-column:1/-1"><div class="fs-num" style="color:var(--red)" id="fMissed">0</div><div class="fs-lbl">❌ Missed (−3 each)</div></div>
     </div>
-    <button class="modal-close" id="copyBtn" style="margin-bottom:10px;">📋 Copy Share Card</button>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <button class="modal-close" id="copyBtn" style="flex:1;">📋 Copy Share Card</button>
+      <button class="modal-close" id="finalViewBtn" style="flex:1;background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);">👁 View Board</button>
+    </div>
     <button class="modal-close" id="finalRestartBtn" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);">↺ Play Again</button>
     <div class="share-card" id="shareCard"></div>
   </div>
@@ -294,7 +243,7 @@
 
 <script>
 (function(){
-  /* ── Countries ─────────────────────────────────────────────────────────── */
+  /* ── Data ──────────────────────────────────────────────────────────── */
   const COUNTRIES=[
     "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan",
     "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi",
@@ -318,10 +267,8 @@
     "Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu",
     "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
     "Vanuatu","Vatican City","Venezuela","Vietnam",
-    "Yemen",
-    "Zambia","Zimbabwe"
+    "Yemen","Zambia","Zimbabwe"
   ];
-
   const ALIASES=new Map([
     ["usa","united states"],["us","united states"],["u s a","united states"],
     ["uk","united kingdom"],["uae","united arab emirates"],
@@ -330,225 +277,356 @@
     ["viet nam","vietnam"],["drc","democratic republic of the congo"],
     ["dr congo","democratic republic of the congo"],
     ["republic of the congo","congo"],["palestine","state of palestine"],
-    ["holy see","vatican city"],["burma","myanmar"],
-    ["swaziland","eswatini"],["east timor","timor leste"],
-    ["trinidad","trinidad and tobago"],["tobago","trinidad and tobago"],
-    ["macedonia","north macedonia"],
+    ["holy see","vatican city"],["burma","myanmar"],["swaziland","eswatini"],
+    ["east timor","timor leste"],["trinidad","trinidad and tobago"],
+    ["tobago","trinidad and tobago"],["macedonia","north macedonia"],
   ]);
 
-  /* ── Scoring constants ────────────────────────────────────────────────── */
-  const ROUND_PTS={1:5,2:3,3:1,4:0};
-  const PEN_RED=2, PEN_OTHER=1, PEN_MISSED=3;
-
-  /* ── State ────────────────────────────────────────────────────────────── */
+  /* ── Constants ─────────────────────────────────────────────────────── */
   const TOTAL_ROUNDS=4;
-  let round=1, revealLetters=1;
-  let guessed=new Map();   // country -> round#
-  let hintFor=new Map();   // country -> [{char,cls}] full hint
-  let totalScore=0;        // running score (updated after each round)
+  const ROUND_PTS={1:5,2:3,3:1,4:0};
+  const PEN_MISSED=3, PEN_NONSENSE=1;
+  const MAX_GUESS_LEN=34;
+  const QUIPS=[
+    "That's quite incoherent, my good sir! (−1)",
+    "What in tarnation are you trying to spell? (−1)",
+    "I'm afraid that's not a country... or a word. (−1)",
+    "My atlas doesn't have that one, chief. (−1)",
+    "Even the flat-earthers don't claim that place. (−1)",
+    "Bold geography, but no. (−1)",
+    "The cartographers are weeping. (−1)",
+    "Is that a country or a sneeze? (−1)",
+  ];
 
-  /* ── Utils ────────────────────────────────────────────────────────────── */
+  /* ── Animation timing (ms) ─────────────────────────────────────────── */
+  // Base values — will be scaled down if there are many entries
+  const BASE_SCROLL  = 180;
+  const BASE_PAUSE   = 60;
+  const BASE_FLIP    = 90;
+  const BASE_AFTER   = 180;
+  const BASE_BETWEEN = 80;
+  const TARGET_MS    = 10000; // aim for full sequence in 10 seconds
+
+  function calcTimings(queueLen, avgTiles){
+    if(queueLen===0)return{T_SCROLL:BASE_SCROLL,T_PAUSE:BASE_PAUSE,T_FLIP:BASE_FLIP,T_AFTER:BASE_AFTER,T_BETWEEN:BASE_BETWEEN};
+    // Estimate how long the animation takes at base speed per entry
+    const basePerEntry = BASE_SCROLL + BASE_PAUSE + avgTiles*BASE_FLIP + BASE_AFTER + BASE_BETWEEN;
+    const totalBase = basePerEntry * queueLen;
+    const scale = Math.min(1, TARGET_MS / totalBase);
+    return {
+      T_SCROLL:  Math.max(80,  Math.round(BASE_SCROLL  * scale)),
+      T_PAUSE:   Math.max(30,  Math.round(BASE_PAUSE   * scale)),
+      T_FLIP:    Math.max(30,  Math.round(BASE_FLIP    * scale)),
+      T_AFTER:   Math.max(60,  Math.round(BASE_AFTER   * scale)),
+      T_BETWEEN: Math.max(20,  Math.round(BASE_BETWEEN * scale)),
+    };
+  }
+
+  /* ── State ─────────────────────────────────────────────────────────── */
+  let round=1,revealLetters=1,totalScore=0,gameOver=false;
+  let guessed=new Map(), hintFor=new Map(), historyFor=new Map();
+  let animating=false;
+
+  /* ── Utils ─────────────────────────────────────────────────────────── */
   const $=id=>document.getElementById(id);
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
   function stripDia(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
   function norm(s){
     const t=stripDia(String(s)).toLowerCase().replace(/['']/g,"").replace(/[^a-z\s-]/g," ").replace(/-/g," ").replace(/\s+/g," ").trim();
     return ALIASES.get(t)??t;
   }
-
   const BY_KEY=new Map();
-  for(const c of COUNTRIES) BY_KEY.set(norm(c),c);
+  for(const c of COUNTRIES)BY_KEY.set(norm(c),c);
 
-  /* ── Prefix reveal ────────────────────────────────────────────────────── */
-  // Returns first N letters of name INCLUDING any trailing separator,
-  // so the input always starts cleanly at a word boundary or after a separator.
+  /* ── Prefix utils ──────────────────────────────────────────────────── */
   function revealPrefix(name,n){
     let out="",seen=0;
     for(let i=0;i<name.length;i++){
       const ch=name[i];
       if(/[A-Za-zÀ-ÿ]/.test(ch)){
-        if(seen>=n)break;
-        out+=ch; seen++;
-        if(seen>=n){
-          // include any trailing separator (space/hyphen) after the nth letter
-          let j=i+1;
-          while(j<name.length&&/[\s\-]/.test(name[j])){out+=name[j];j++;}
-          break;
-        }
-      } else {
-        if(seen>0)out+=ch;
-      }
+        if(seen>=n)break; out+=ch; seen++;
+        if(seen>=n){let j=i+1;while(j<name.length&&/[\s-]/.test(name[j])){out+=name[j];j++;}break;}
+      }else{if(seen>0)out+=ch;}
     }
     return out||name[0];
   }
+  function letterCount(s){return(s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;}
 
-  // Count how many LETTERS are in the prefix string (used for ghost skip)
-  function letterCount(s){
-    return (s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
-  }
-
-  /* ── String distance ──────────────────────────────────────────────────── */
+  /* ── String distance ────────────────────────────────────────────────── */
   function lev(a,b){
-    const n=a.length,m=b.length;
-    if(!n)return m;if(!m)return n;
-    let prev=Array.from({length:m+1},(_,i)=>i),cur=new Array(m+1);
-    for(let i=1;i<=n;i++){
-      cur[0]=i;
-      for(let j=1;j<=m;j++){const c=a[i-1]===b[j-1]?0:1;cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+c);}
-      [prev,cur]=[cur,prev];
-    }
-    return prev[m];
+    const n=a.length,m=b.length;if(!n)return m;if(!m)return n;
+    let p=Array.from({length:m+1},(_,i)=>i),c=new Array(m+1);
+    for(let i=1;i<=n;i++){c[0]=i;for(let j=1;j<=m;j++){const x=a[i-1]===b[j-1]?0:1;c[j]=Math.min(c[j-1]+1,p[j]+1,p[j-1]+x);}[p,c]=[c,p];}
+    return p[m];
   }
   function jw(s1,s2){
-    if(s1===s2)return 1;
-    const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
+    if(s1===s2)return 1;const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
     const md=Math.max(0,Math.floor(Math.max(l1,l2)/2)-1);
-    const m1=new Array(l1).fill(false),m2=new Array(l2).fill(false);
-    let mat=0;
+    const m1=new Array(l1).fill(false),m2=new Array(l2).fill(false);let mat=0;
     for(let i=0;i<l1;i++){const lo=Math.max(0,i-md),hi=Math.min(i+md+1,l2);for(let j=lo;j<hi;j++){if(m2[j]||s1[i]!==s2[j])continue;m1[i]=m2[j]=true;mat++;break;}}
-    if(!mat)return 0;
-    let t=0,k=0;
+    if(!mat)return 0;let t=0,k=0;
     for(let i=0;i<l1;i++){if(!m1[i])continue;while(!m2[k])k++;if(s1[i]!==s2[k])t++;k++;}
     const jar=(mat/l1+mat/l2+(mat-t/2)/mat)/3;
     let p=0;for(let i=0;i<Math.min(4,l1,l2);i++){if(s1[i]===s2[i])p++;else break;}
     return jar+p*0.1*(1-jar);
   }
-  function findClosest(g){
-    const g0=g[0]||"";let best=null,bs=-Infinity;
+  function findClosest(g,prefixNorm){
+    let best=null,bs=-Infinity;
     for(const[key,orig]of BY_KEY){
-      const ss=(g0&&key[0]===g0)?0.18:0;
+      if(prefixNorm&&!key.startsWith(prefixNorm))continue;
       const ml=Math.max(g.length,key.length)||1;
-      const sc=0.50*jw(g,key)+0.40*(1-lev(g,key)/ml)+ss-0.25*Math.min(0.4,Math.abs(g.length-key.length)/20);
+      const sc=0.55*jw(g,key)+0.35*(1-lev(g,key)/ml);
       if(sc>bs){bs=sc;best=orig;}
     }
+    if(!best){for(const[key,orig]of BY_KEY){const ml=Math.max(g.length,key.length)||1;const sc=0.55*jw(g,key)+0.35*(1-lev(g,key)/ml);if(sc>bs){bs=sc;best=orig;}}}
     return best;
   }
+  function minLevToAny(g){let b=Infinity;for(const[k]of BY_KEY){const d=lev(g,k);if(d<b)b=d;}return b;}
+  function isCoherent(g){
+    if(!g.length||g.length>MAX_GUESS_LEN)return false;
+    return minLevToAny(g)<=Math.ceil(g.length*0.50);
+  }
 
-  /* ── Colorize ─────────────────────────────────────────────────────────── */
+  /* ── Colorize ───────────────────────────────────────────────────────── */
   function colorize(guessRaw,target){
-    const g=norm(guessRaw).split("");
-    const t=norm(target).split("");
+    const g=norm(guessRaw).split(""),t=norm(target).split("");
     const len=Math.max(g.length,t.length);
-    const counts=new Map();
-    for(const ch of t)counts.set(ch,(counts.get(ch)||0)+1);
+    const counts=new Map();for(const ch of t)counts.set(ch,(counts.get(ch)||0)+1);
     const mark=new Array(len).fill(null);
-    // greens
     for(let i=0;i<len;i++){
-      if(i>=g.length){mark[i]="w";continue;}
-      if(i>=t.length){mark[i]="k";continue;}
+      if(i>=g.length){mark[i]="w";continue;}if(i>=t.length){mark[i]="k";continue;}
       if(g[i]===t[i]){mark[i]="g";counts.set(g[i],counts.get(g[i])-1);}
     }
-    // yellows/reds
     for(let i=0;i<len;i++){
-      if(mark[i]!==null)continue;
-      const ch=g[i],c=counts.get(ch)||0;
+      if(mark[i]!==null)continue;const ch=g[i],c=counts.get(ch)||0;
       if(c>0){mark[i]="y";counts.set(ch,c-1);}else{mark[i]="r";}
     }
     return Array.from({length:len},(_,i)=>({char:mark[i]==="w"?"·":(g[i]??""),cls:mark[i]}));
   }
 
-  /* ── Score a hint (penalty for wrong guess) ───────────────────────────── */
-  function hintPenalty(hint){
-    let pen=0;
-    for(const{cls}of hint){
-      if(cls==="r")pen+=PEN_RED;
-      else if(cls==="y"||cls==="w"||cls==="k")pen+=PEN_OTHER;
-      // g = no penalty
-    }
-    return pen;
-  }
-
-  /* ── Ghost ────────────────────────────────────────────────────────────── */
+  /* ── Ghost ──────────────────────────────────────────────────────────── */
   function setGhost(ghostEl,hint,skipLetters,typed){
-    if(!ghostEl||!hint||!hint.length){if(ghostEl)ghostEl.innerHTML="";return;}
+    if(!ghostEl||!hint?.length){if(ghostEl)ghostEl.innerHTML="";return;}
     const suffix=hint.slice(skipLetters);
     const spacer=`<span class="gh-typed">${esc(typed)}</span>`;
     const remain=suffix.slice(typed.length).map(({char,cls})=>`<span class="${cls}">${esc(char)}</span>`).join("");
     ghostEl.innerHTML=spacer+`<span class="gh-rem">${remain}</span>`;
   }
 
-  /* ── Live score display ───────────────────────────────────────────────── */
-  function updateLiveScore(delta){
-    $("liveScore").textContent=totalScore;
-    const el=$("liveScore");
-    el.classList.remove("up","down");
-    if(delta>0){el.classList.add("up");setTimeout(()=>el.classList.remove("up"),600);}
-    else if(delta<0){el.classList.add("down");setTimeout(()=>el.classList.remove("down"),600);}
+  /* ── Toast ──────────────────────────────────────────────────────────── */
+  let toastTimer=null;
+  function showToast(msg){
+    const t=$("toast");t.textContent=msg;t.classList.add("show");
+    clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);
   }
 
-  /* ── Board ────────────────────────────────────────────────────────────── */
+  /* ── Live score ─────────────────────────────────────────────────────── */
+  function updateLiveScore(delta){
+    $("liveScore").textContent=totalScore;
+    const el=$("liveScore");el.classList.remove("up","down");
+    if(delta>0){el.classList.add("up");setTimeout(()=>el.classList.remove("up"),700);}
+    else if(delta<0){el.classList.add("down");setTimeout(()=>el.classList.remove("down"),700);}
+  }
+
+  /* ── Score float animation ──────────────────────────────────────────── */
+  function floatScore(pts, anchorEl){
+    // Both rects are viewport-relative — no scrollY needed since we use fixed positioning
+    const scoreRect=$("scoreLiveEl").getBoundingClientRect();
+    const anchorRect=anchorEl.getBoundingClientRect();
+
+    const el=document.createElement("div");
+    el.className="score-float";
+    el.textContent=(pts>0?"+":"")+pts;
+    el.style.color=pts>0?"var(--green)":"var(--red)";
+    el.style.left=(anchorRect.left+anchorRect.width/2-16)+"px";
+    el.style.top=(anchorRect.top-4)+"px";
+    document.body.appendChild(el);
+
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+      el.style.transition="opacity 0.65s ease, left 0.65s ease, top 0.65s ease, transform 0.65s ease";
+      el.style.opacity="0";
+      el.style.left=(scoreRect.left+scoreRect.width/2-16)+"px";
+      el.style.top=(scoreRect.top-10)+"px";
+      el.style.transform="scale(1.3)";
+      setTimeout(()=>{el.remove();updateLiveScore(pts);},680);
+    });});
+  }
+
+  /* ── Reveal animation for one entry ────────────────────────────────────
+   * entry = { rowEl, inpWrap, pfxLetters, result, hint, pts, country, name, T }
+   * hint = full colorize array for the whole normalised name
+   * pfxLetters = how many letters are already shown as static text
+   */
+  async function animateEntry(entry){
+    const {rowEl, inpWrap, pfxLetters, result, hint, pts, name, T} = entry;
+
+    // 1. Scroll row into center of the board-scroll container
+    const boardEl=$("board");
+    const rowTop=rowEl.offsetTop;
+    const targetScroll=rowTop-(boardEl.clientHeight/2)+(rowEl.offsetHeight/2);
+    boardEl.scrollTo({top:Math.max(0,targetScroll),behavior:"smooth"});
+    rowEl.classList.add("animating");
+    await wait(T.T_SCROLL+T.T_PAUSE);
+
+    // 2. Hide the input wrap (keep layout stable), insert tiles after prefix
+    inpWrap.style.visibility="hidden";
+
+    // Suffix hint = everything after the already-revealed prefix letters
+    const suffixHint = hint.slice(pfxLetters);
+
+    const tilesWrap=document.createElement("div");
+    tilesWrap.className="reveal-tiles";
+    rowEl.insertBefore(tilesWrap, inpWrap);
+
+    const tiles=suffixHint.map(({char})=>{
+      const t=document.createElement("span");
+      t.className="rtile";
+      t.textContent=char||"·";
+      tilesWrap.appendChild(t);
+      return t;
+    });
+
+    await wait(30);
+
+    // 3. Flip tiles one by one
+    for(let i=0;i<tiles.length;i++){
+      await wait(T.T_FLIP);
+      tiles[i].classList.add("flipped", suffixHint[i].cls);
+    }
+
+    // 4. Float score up for correct answers
+    await wait(60);
+    if(pts>0){
+      totalScore+=pts;
+      floatScore(pts, rowEl);
+    }
+
+    await wait(T.T_AFTER);
+
+    // 5. Settle into final row state — rewrite row contents in-place
+    tilesWrap.remove();
+    inpWrap.style.visibility="";
+    rowEl.classList.remove("animating");
+
+    if(result==="correct"){
+      // Replace row content with the clean guessed state: full name + badge
+      rowEl.innerHTML="";
+      rowEl.className="crow guessed";
+      const pfxEl=document.createElement("span");
+      pfxEl.className="pfx"; pfxEl.textContent=name;
+      const badge=document.createElement("span");
+      badge.className="badge"; badge.textContent="✓ R"+round;
+      rowEl.appendChild(pfxEl); rowEl.appendChild(badge);
+      $("guessedCount").textContent=guessed.size;
+    }
+    // For wrong: clear ghost too so nothing flashes before renderBoard
+    if(result==="wrong"){
+      const ghost=inpWrap.querySelector(".ghost");
+      if(ghost)ghost.innerHTML="";
+    }
+  }
+
+  /* ── Board ──────────────────────────────────────────────────────────── */
   const SORTED=[...COUNTRIES].sort((a,b)=>a.localeCompare(b));
-  let inputRefs=new Map(); // country -> {inp, ghostEl, prefix, prefixLetters}
+  let inputRefs=new Map(); // country -> {inp,ghostEl,prefix,prefixLetters,prefixNorm,rowEl,inpWrap}
 
   function renderBoard(){
     inputRefs.clear();
-    const board=$("board");
-    board.innerHTML="";
+    const board=$("board");board.innerHTML="";
     let firstInp=null,curLetter="",grpEl=null;
 
     for(const name of SORTED){
       const letter=name[0].toUpperCase();
       if(letter!==curLetter){
-        curLetter=letter;
-        grpEl=document.createElement("div");
-        grpEl.className="letter-group";
-        const hdr=document.createElement("div");
-        hdr.className="letter-hdr";
-        hdr.textContent=letter;
-        grpEl.appendChild(hdr);
-        board.appendChild(grpEl);
+        curLetter=letter;grpEl=document.createElement("div");grpEl.className="letter-group";
+        const hdr=document.createElement("div");hdr.className="letter-hdr";hdr.textContent=letter;
+        grpEl.appendChild(hdr);board.appendChild(grpEl);
       }
-
       const isGuessed=guessed.has(name);
       const row=document.createElement("div");
-      row.className="crow"+(isGuessed?" guessed":"");
 
-      if(isGuessed){
-        const pfx=document.createElement("span");
-        pfx.className="pfx"; pfx.textContent=name;
-        const b=document.createElement("span");
-        b.className="badge"; b.textContent=`✓ R${guessed.get(name)}`;
-        row.appendChild(pfx); row.appendChild(b);
-      } else {
-        const pfxStr=revealPrefix(name,revealLetters);
-        const pfxLetters=letterCount(pfxStr);
+      if(gameOver){
+        if(isGuessed){
+          row.className="crow guessed";
+          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
+          const b=document.createElement("span");b.className="badge";b.textContent=`✓ R${guessed.get(name)}`;
+          row.appendChild(pfx);row.appendChild(b);
+        }else{
+          row.className="crow missed";
+          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
+          const b=document.createElement("span");b.className="badge";b.textContent="✗ missed";
+          row.appendChild(pfx);row.appendChild(b);
+        }
+      }else{
+        row.className="crow"+(isGuessed?" guessed":"");
+        if(isGuessed){
+          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
+          const b=document.createElement("span");b.className="badge";b.textContent=`✓ R${guessed.get(name)}`;
+          row.appendChild(pfx);row.appendChild(b);
+        }else{
+          const pfxStr=revealPrefix(name,revealLetters);
+          const pfxLetters=letterCount(pfxStr);
+          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=pfxStr;
+          row.appendChild(pfx);
 
-        const pfx=document.createElement("span");
-        pfx.className="pfx"; pfx.textContent=pfxStr;
-        row.appendChild(pfx);
+          const wrap=document.createElement("div");wrap.className="inp-wrap";
+          const ghostEl=document.createElement("div");ghostEl.className="ghost";wrap.appendChild(ghostEl);
+          const inp=document.createElement("input");
+          inp.type="text";inp.className="cinput";
+          inp.autocomplete="off";inp.autocorrect="off";inp.autocapitalize="off";inp.spellcheck=false;
 
-        const wrap=document.createElement("div");
-        wrap.className="inp-wrap";
-        const ghostEl=document.createElement("div");
-        ghostEl.className="ghost";
-        wrap.appendChild(ghostEl);
+          const hint=hintFor.get(name);
+          if(hint)setGhost(ghostEl,hint,pfxLetters,"");
 
-        const inp=document.createElement("input");
-        inp.type="text"; inp.className="cinput";
-        inp.autocomplete="off"; inp.autocorrect="off";
-        inp.autocapitalize="off"; inp.spellcheck=false;
+          inp.addEventListener("input",()=>{
+            const h=hintFor.get(name);if(h)setGhost(ghostEl,h,pfxLetters,inp.value);
+          });
+          inp.addEventListener("blur",()=>{
+            const suffix=inp.value.trim();if(!suffix)return;
+            const k=norm(pfxStr+suffix);
+            if(!isCoherent(k)){
+              showToast(QUIPS[Math.floor(Math.random()*QUIPS.length)]);
+              inp.value="";
+              const h=hintFor.get(name);
+              if(h)setGhost(ghostEl,h,pfxLetters,"");else ghostEl.innerHTML="";
+              totalScore-=PEN_NONSENSE;updateLiveScore(-PEN_NONSENSE);
+            }
+          });
+          inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();focusNext(name);}});
 
-        const hint=hintFor.get(name);
-        if(hint) setGhost(ghostEl,hint,pfxLetters,"");
+          wrap.appendChild(inp);row.appendChild(wrap);
 
-        inp.addEventListener("input",()=>{
-          const h=hintFor.get(name);
-          if(h)setGhost(ghostEl,h,pfxLetters,inp.value);
-        });
-        inp.addEventListener("keydown",e=>{
-          if(e.key==="Enter"){e.preventDefault();focusNext(name);}
-        });
+          // History ? button
+          const hist=historyFor.get(name);
+          if(hist?.length>0){
+            const hbtn=document.createElement("button");
+            hbtn.className="hist-btn";hbtn.setAttribute("tabindex","-1");hbtn.textContent="?";
+            const tip=document.createElement("div");tip.className="hist-tip";
+            const hdr2=document.createElement("div");hdr2.className="hist-tip-hdr";hdr2.textContent="Previous guesses";
+            tip.appendChild(hdr2);
+            for(const{guess,hint:gh}of hist){
+              const row2=document.createElement("div");row2.className="ht-row";
+              const gl=document.createElement("span");
+              gl.style.cssText="font-size:11px;color:rgba(221,238,255,0.4);margin-right:6px;min-width:70px;display:inline-block;overflow:hidden;text-overflow:ellipsis;";
+              gl.textContent=guess;row2.appendChild(gl);
+              const hs=document.createElement("span");hs.style.display="flex";hs.style.gap="1px";
+              for(const{char,cls}of gh){const s=document.createElement("span");s.className="ht-ch "+cls;s.textContent=char;hs.appendChild(s);}
+              row2.appendChild(hs);tip.appendChild(row2);
+            }
+            hbtn.appendChild(tip);row.appendChild(hbtn);
+          }
 
-        wrap.appendChild(inp); row.appendChild(wrap);
-        inputRefs.set(name,{inp,ghostEl,prefix:pfxStr,prefixLetters:pfxLetters});
-        if(!firstInp)firstInp=inp;
+          inputRefs.set(name,{inp,ghostEl,prefix:pfxStr,prefixLetters:pfxLetters,
+            prefixNorm:norm(pfxStr.trimEnd()),rowEl:row,inpWrap:wrap});
+          if(!firstInp)firstInp=inp;
+        }
       }
       grpEl.appendChild(row);
     }
-
     $("guessedCount").textContent=guessed.size;
     $("totalCount").textContent=COUNTRIES.length;
-    if(firstInp)firstInp.focus();
+    if(firstInp&&!gameOver)firstInp.focus();
   }
 
   function focusNext(cur){
@@ -557,7 +635,6 @@
     for(let i=0;i<idx;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
   }
 
-  /* ── Dots ─────────────────────────────────────────────────────────────── */
   function renderDots(){
     const c=$("roundDots");c.innerHTML="";
     for(let i=1;i<=TOTAL_ROUNDS;i++){
@@ -567,178 +644,188 @@
     }
   }
 
-  /* ── Game flow ────────────────────────────────────────────────────────── */
-  function startGame(){
-    round=1;revealLetters=1;totalScore=0;
-    guessed=new Map();hintFor=new Map();
-    $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
-    $("errBanner").style.display="none";
-    $("roundModal").classList.remove("open");
-    $("finalModal").classList.remove("open");
-    $("submitBtn").style.display="inline-block";$("submitBtn").disabled=false;
-    $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
-    $("revealPill").textContent=revealLetters;
-    $("liveScore").textContent="0";
-    renderDots();renderBoard();
-  }
-
+  /* ── Submit: compute results, then animate, then show modal ─────────── */
   function submitRound(){
+    if(animating)return;
     try{
-      // 1. Collect submissions: prefix + what user typed in each row
+      $("submitBtn").disabled=true;
+
+      // 1. Collect
       const subs=[];
       for(const[,ref]of inputRefs){
         const suffix=ref.inp.value.trim();
-        if(suffix)subs.push(ref.prefix+suffix);
+        if(suffix)subs.push({raw:ref.prefix+suffix,ref});
       }
-
-      // 2. Deduplicate
+      // Deduplicate by norm
       const seen=new Set(),unique=[];
-      for(const raw of subs){const k=norm(raw);if(k&&!seen.has(k)){seen.add(k);unique.push(raw);}}
+      for(const s of subs){const k=norm(s.raw);if(k&&!seen.has(k)){seen.add(k);unique.push(s);}}
 
-      // 3. Score this round
-      let roundDelta=0,correctCount=0,wrongCount=0;
-      let penRedTotal=0,penOtherTotal=0;
-      const newHints=new Map();
-      for(const[c,h]of hintFor)newHints.set(c,h);
+      // 2. Compute all results upfront (don't mutate state yet)
+      const queue=[]; // animation entries
+      let roundDelta=0,correctCount=0,wrongCount=0,rejCount=0;
+      const queuedCorrect=new Set(); // track correct answers queued (to avoid double-count)
+      const pendingHints=new Map();  // country->hint
+      const pendingHistory=[];
 
-      for(const raw of unique){
+      for(const{raw,ref}of unique){
         const k=norm(raw);
         const exact=BY_KEY.get(k);
-        if(exact&&!guessed.has(exact)){
-          guessed.set(exact,round);
-          roundDelta+=ROUND_PTS[round]??0;
-          correctCount++;
-          newHints.delete(exact);
-        } else if(exact&&guessed.has(exact)){
-          // already guessed, ignore
+        if(exact&&!guessed.has(exact)&&!queuedCorrect.has(exact)){
+          // ✅ Correct — build all-green hint for the FULL normalised name
+          const pts=ROUND_PTS[round]??0;
+          roundDelta+=pts; correctCount++;
+          queuedCorrect.add(exact);
+          const hint=norm(exact).split("").map(ch=>({char:ch,cls:"g"}));
+          queue.push({country:exact,name:exact,ref,guess:raw,result:"correct",hint,pts});
+        } else if(exact&&(guessed.has(exact)||queuedCorrect.has(exact))){
+          // Already guessed — skip silently
         } else {
-          // wrong guess
-          const closest=findClosest(k);
+          // Safety net coherence
+          if(!isCoherent(k)){roundDelta-=PEN_NONSENSE;rejCount++;continue;}
+          // ❌ Wrong — find closest country respecting prefix
+          const closest=findClosest(k,ref.prefixNorm);
           const hint=colorize(raw,closest);
-          newHints.set(closest,hint);
-          const pen=hintPenalty(hint);
-          roundDelta-=pen;
-          for(const{cls}of hint){
-            if(cls==="r")penRedTotal++;
-            else if(cls==="y"||cls==="w"||cls==="k")penOtherTotal++;
-          }
+          pendingHints.set(closest,hint);
+          pendingHistory.push({country:closest,guess:raw,hint});
           wrongCount++;
+          queue.push({country:closest,name:closest,ref,guess:raw,result:"wrong",hint,pts:0});
         }
       }
 
-      hintFor=newHints;
-      totalScore+=roundDelta;
-      if(totalScore<-9999)totalScore=-9999; // floor
+      // 3. Compute adaptive timings, then run animation per-entry
+      const avgTiles = queue.length
+        ? queue.reduce((s,e)=>s+e.hint.length,0)/queue.length
+        : 8;
+      const T=calcTimings(queue.length, avgTiles);
 
-      updateLiveScore(roundDelta);
-      $("roundCorrect").textContent=correctCount;
-      $("roundWrong").textContent=wrongCount;
+      animating=true;
+      (async()=>{
+        for(const entry of queue){
+          await animateEntry({
+            rowEl:      entry.ref.rowEl,
+            inpWrap:    entry.ref.inpWrap,
+            pfxLetters: entry.ref.prefixLetters,
+            result:     entry.result,
+            hint:       entry.hint,
+            pts:        entry.pts,
+            country:    entry.country,
+            name:       entry.name,
+            T,
+          });
+          // Commit correct guesses immediately (animateEntry already rewrote the row)
+          if(entry.result==="correct"){
+            guessed.set(entry.country, round);
+            $("guessedCount").textContent=guessed.size;
+          }
+          // Wrong hints are committed in bulk after the loop to avoid ghost flash
+          await wait(T.T_BETWEEN);
+        }
 
-      renderBoard();
+        // 4. Commit remaining non-animated state (hints, history)
+        for(const[c,h]of pendingHints) hintFor.set(c,h);
+        for(const{country,guess,hint} of pendingHistory){
+          if(!historyFor.has(country))historyFor.set(country,[]);
+          historyFor.get(country).push({guess,hint});
+        }
 
-      // 4. Count blanks
-      const blankCount=Math.max(0,COUNTRIES.length-guessed.size-wrongCount);
+        animating=false;
+        renderBoard();
 
-      if(round<TOTAL_ROUNDS){
-        showRoundModal(correctCount,wrongCount,blankCount,roundDelta,penRedTotal,penOtherTotal);
-        $("submitBtn").disabled=true;
-      } else {
-        // Apply missed penalty
-        const missedCount=COUNTRIES.length-guessed.size;
-        totalScore-=missedCount*PEN_MISSED;
-        updateLiveScore(-missedCount*PEN_MISSED);
-        showFinalModal(correctCount,wrongCount,blankCount,roundDelta);
-      }
+        $("roundCorrect").textContent=correctCount;
+        $("roundWrong").textContent=wrongCount;
+        const blankCount=Math.max(0,COUNTRIES.length-guessed.size-wrongCount);
+
+        await wait(350);
+        if(round<TOTAL_ROUNDS){
+          showRoundModal(correctCount,wrongCount,blankCount,roundDelta,rejCount);
+        } else {
+          const missedCount=COUNTRIES.length-guessed.size;
+          const missedPen=missedCount*PEN_MISSED;
+          totalScore-=missedPen;
+          updateLiveScore(-missedPen);
+          gameOver=true;
+          renderBoard();
+          await wait(200);
+          showFinalModal();
+        }
+      })();
+
     }catch(e){
+      animating=false;
       $("errBanner").style.display="block";
       $("errBanner").textContent="Error: "+(e?.message||e);
       console.error(e);
     }
   }
 
-  function showRoundModal(correctCount,wrongCount,blankCount,delta,penRed,penOther){
+  function showRoundModal(correctCount,wrongCount,blankCount,delta,rejCount){
     $("mRoundLabel").textContent=`Round ${round} / ${TOTAL_ROUNDS}`;
-    $("mCorrect").textContent=correctCount;
-    $("mWrong").textContent=wrongCount;
-    $("mBlank").textContent=blankCount;
+    $("mCorrect").textContent=correctCount;$("mWrong").textContent=wrongCount;$("mBlank").textContent=blankCount;
     $("mSub").innerHTML=`<b>${guessed.size}</b> guessed total &nbsp;·&nbsp; <b>${COUNTRIES.length-guessed.size}</b> remaining`;
-
     const deltaEl=$("ptsDelta");
     deltaEl.classList.remove("show","pos","neg");
     deltaEl.textContent=(delta>=0?"+":"")+delta;
     deltaEl.classList.add(delta>=0?"pos":"neg");
-    setTimeout(()=>deltaEl.classList.add("show"),30);
-
-    // Breakdown text
+    setTimeout(()=>deltaEl.classList.add("show"),40);
     const parts=[];
-    if(correctCount>0)parts.push(`+${correctCount*( ROUND_PTS[round]??0)} correct`);
-    if(penRed>0)parts.push(`−${penRed*PEN_RED} red letters`);
-    if(penOther>0)parts.push(`−${penOther*PEN_OTHER} other misses`);
+    if(correctCount>0)parts.push(`+${correctCount*(ROUND_PTS[round]??0)} correct`);
+    if(rejCount>0)parts.push(`−${rejCount*PEN_NONSENSE} nonsense`);
     $("ptsBreakdown").textContent=parts.join(" · ")||"No submissions";
-
     $("roundModal").classList.add("open");
   }
 
   function closeRoundModal(){
     $("roundModal").classList.remove("open");
-    advanceRound();
-  }
-
-  function advanceRound(){
-    try{
-      if(round>=TOTAL_ROUNDS)return;
+    if(round<TOTAL_ROUNDS){
       round++;revealLetters=round;
       $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
       $("revealPill").textContent=revealLetters;
       $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
-      $("submitBtn").disabled=false;
+      $("submitBtn").disabled=false;$("submitBtn").style.display="inline-block";
       renderDots();renderBoard();
-    }catch(e){
-      $("errBanner").style.display="block";
-      $("errBanner").textContent="Error: "+(e?.message||e);
-      console.error(e);
     }
   }
 
   function showFinalModal(){
-    const pts={1:5,2:3,3:1,4:0};
-    let c1=0,c2=0,c3=0,c4=0,missed=0;
+    const pts={1:5,2:3,3:1,4:0};let c1=0,c2=0,c3=0,c4=0,missed=0;
     for(const c of COUNTRIES){
       if(guessed.has(c)){const r=guessed.get(c);if(r===1)c1++;else if(r===2)c2++;else if(r===3)c3++;else c4++;}
       else missed++;
     }
-    const maxPossible=COUNTRIES.length*ROUND_PTS[1]-0; // if all R1
     $("finalScoreNum").textContent=totalScore;
     $("finalPct").textContent=`${guessed.size} / ${COUNTRIES.length} countries found`;
     $("f1").textContent=c1;$("f2").textContent=c2;$("f3").textContent=c3;$("f4").textContent=c4;$("fMissed").textContent=missed;
-
     const date=new Date().toISOString().slice(0,10);
     $("shareCard").textContent=
 `LANDLE 🌍  ${date}
 ━━━━━━━━━━━━━━━━━━━━
-🟩 R1 (+5): ${c1}
-🟦 R2 (+3): ${c2}
-🟨 R3 (+1): ${c3}
-⬛ R4 (+0): ${c4}
+🟩 R1 (+5): ${c1}  🟦 R2 (+3): ${c2}
+🟨 R3 (+1): ${c3}  ⬛ R4 (+0): ${c4}
 ❌ Missed (−3): ${missed}
 ━━━━━━━━━━━━━━━━━━━━
-SCORE: ${totalScore}
-${guessed.size}/${COUNTRIES.length} countries
+SCORE: ${totalScore}  (${guessed.size}/${COUNTRIES.length})
 Play LANDLE!`;
-
     $("submitBtn").style.display="none";
     $("finalModal").classList.add("open");
+  }
+
+  function startGame(){
+    round=1;revealLetters=1;totalScore=0;gameOver=false;animating=false;
+    guessed=new Map();hintFor=new Map();historyFor=new Map();
+    $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
+    $("errBanner").style.display="none";
+    $("roundModal").classList.remove("open");$("finalModal").classList.remove("open");
+    $("submitBtn").style.display="inline-block";$("submitBtn").disabled=false;
+    $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
+    $("revealPill").textContent=revealLetters;$("liveScore").textContent="0";
+    renderDots();renderBoard();
   }
 
   async function copyShareCard(){
     try{
       await navigator.clipboard.writeText($("shareCard").textContent);
-      $("copyBtn").textContent="✅ Copied!";
-      setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",2000);
-    }catch{
-      $("copyBtn").textContent="Select text above to copy";
-      setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",3000);
-    }
+      $("copyBtn").textContent="✅ Copied!";setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",2000);
+    }catch{$("copyBtn").textContent="Select text above";setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",3000);}
   }
 
   $("submitBtn").addEventListener("click",submitRound);
@@ -747,6 +834,8 @@ Play LANDLE!`;
   $("copyBtn").addEventListener("click",copyShareCard);
   $("roundModalClose").addEventListener("click",closeRoundModal);
   $("roundModal").addEventListener("click",e=>{if(e.target===$("roundModal"))closeRoundModal();});
+  $("finalViewBtn").addEventListener("click",()=>$("finalModal").classList.remove("open"));
+  $("finalModal").addEventListener("click",e=>{if(e.target===$("finalModal"))$("finalModal").classList.remove("open");});
 
   startGame();
 })();

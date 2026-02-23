@@ -3,241 +3,585 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Country Guessing Game</title>
+  <title>GRIND — Country Guessing Game</title>
   <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    body { margin: 0; background: #0b1220; color: #e7eefc; }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
-    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 18px; }
-    h1 { font-size: 22px; margin: 0 0 10px; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .pill { padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.16); background: rgba(0,0,0,0.18); font-size: 13px; }
-    .clue { font-size: 18px; margin: 14px 0; line-height: 1.4; }
-    .masked { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 22px; letter-spacing: 2px; }
-    input[type="text"] {
-      width: min(420px, 100%);
-      padding: 12px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.25);
-      color: #e7eefc;
-      outline: none;
+    :root{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+    body{ margin:0; background:#0b1220; color:#e7eefc; }
+    .wrap{ max-width:1100px; margin:0 auto; padding:20px; display:grid; gap:14px; grid-template-columns: 1.3fr 1fr; }
+    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
+    .card{ background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px; }
+    h1{ margin:0 0 8px; font-size:20px; }
+    h2{ margin:0 0 10px; font-size:16px; opacity:.95; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .pill{ padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(0,0,0,.18); font-size:13px; }
+    button{
+      padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.10); color:#e7eefc; cursor:pointer;
     }
-    button {
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.10);
-      color: #e7eefc;
-      cursor: pointer;
+    button:hover{ background:rgba(255,255,255,.16); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    textarea{
+      width:100%; min-height:140px; padding:10px 12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.18); background:rgba(0,0,0,.25); color:#e7eefc;
+      outline:none; resize:vertical;
     }
-    button:hover { background: rgba(255,255,255,0.16); }
-    .msg { margin-top: 12px; min-height: 24px; color: #cfe0ff; }
-    .bad { color: #ffb4b4; }
-    .good { color: #b8ffcf; }
-    .small { font-size: 13px; opacity: 0.9; }
-    .footer { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .small{ font-size:13px; opacity:.9; }
+    .list{
+      max-height: 540px; overflow:auto; padding:10px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18);
+    }
+    .letterHdr{ margin:12px 0 6px; font-weight:700; opacity:.95; }
+    .countryRow{
+      display:flex; justify-content:space-between; gap:10px;
+      padding:6px 8px; border-radius:10px;
+    }
+    .countryRow.guessed{ background:rgba(120,255,170,.10); }
+    .mask{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      letter-spacing:1px;
+    }
+    .rightCol{ display:flex; gap:10px; align-items:center; opacity:.9; font-size:13px; }
+    .msg{ min-height:24px; margin-top:10px; }
+    .good{ color:#b8ffcf; }
+    .bad{ color:#ffb4b4; }
+
+    /* Wordle-ish coloring */
+    .cmp{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:14px; }
+    .g{ background:rgba(0,255,140,.25); border:1px solid rgba(0,255,140,.35); padding:1px 4px; border-radius:6px; }
+    .y{ background:rgba(255,215,0,.22); border:1px solid rgba(255,215,0,.35); padding:1px 4px; border-radius:6px; }
+    .r{ background:rgba(255,80,80,.22); border:1px solid rgba(255,80,80,.35); padding:1px 4px; border-radius:6px; }
+    .feedbackItem{ padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18); margin-top:10px; }
+    .grid2{ display:grid; grid-template-columns: 1fr; gap:10px; }
+    .scoreCard{
+      white-space:pre; overflow:auto; padding:10px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <!-- LEFT: Game Board -->
     <div class="card">
-      <h1>🌍 Country Guessing Game</h1>
-
-      <div class="row">
-        <div class="pill" id="roundPill">Round 1</div>
-        <div class="pill">Streak: <span id="streak">0</span></div>
-        <div class="pill">Correct: <span id="correct">0</span></div>
-        <div class="pill">Played: <span id="played">0</span></div>
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <h1>🌍 GRIND</h1>
+          <div class="small">Free recall. Type any countries you remember. 4 rounds, more letters revealed each round.</div>
+        </div>
+        <div class="row">
+          <div class="pill" id="roundPill">Round 1 / 4</div>
+          <div class="pill">Revealed letters: <span id="revealPill">1</span></div>
+        </div>
       </div>
 
-      <div class="clue" id="clueText"></div>
-      <div class="masked" id="maskedName" style="display:none;"></div>
+      <div style="margin-top:12px;" class="row">
+        <div class="pill">Guessed: <b><span id="guessedCount">0</span></b> / <span id="totalCount">195</span></div>
+        <div class="pill">This round correct: <b><span id="roundCorrect">0</span></b></div>
+        <div class="pill">This round wrong: <b><span id="roundWrong">0</span></b></div>
+      </div>
 
-      <div class="row" style="margin-top: 14px;">
-        <input
-          id="guessInput"
-          type="text"
-          inputmode="text"
-          autocomplete="off"
-          autocapitalize="off"
-          autocorrect="off"
-          spellcheck="false"
-          placeholder="Type the country name exactly…"
-        />
-        <button id="submitBtn">Guess</button>
-        <button id="skipBtn" title="Give up and reveal answer">Skip</button>
+      <div style="margin-top:12px;">
+        <h2>Board</h2>
+        <div class="list" id="board"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Input + Review -->
+    <div class="card">
+      <h2>Enter guesses (one per line)</h2>
+      <textarea id="guessBox" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+        placeholder="Australia
+Austria
+Azerbaijan
+..."></textarea>
+
+      <div class="row" style="margin-top:10px;">
+        <button id="submitBtn">Submit Round</button>
+        <button id="nextBtn" style="display:none;">Next Round</button>
+        <button id="restartBtn">Restart</button>
       </div>
 
       <div class="msg" id="msg"></div>
 
-      <div class="footer">
-        <button id="nextBtn" style="display:none;">Next Country</button>
-        <span class="small">No spellcheck, no “close enough” — exact match (case-insensitive).</span>
+      <div style="margin-top:12px;">
+        <h2>Round Review</h2>
+        <div class="small">Wrong guesses show closest country + letter match coloring (green exact, yellow misplaced, red wrong).</div>
+        <div id="review" class="grid2"></div>
+      </div>
+
+      <div id="finalPanel" style="display:none; margin-top:12px;">
+        <h2>Final Score</h2>
+        <div class="row">
+          <div class="pill">Total score: <b><span id="finalScore">0</span></b></div>
+          <div class="pill">R1: <span id="c1">0</span></div>
+          <div class="pill">R2: <span id="c2">0</span></div>
+          <div class="pill">R3: <span id="c3">0</span></div>
+          <div class="pill">R4: <span id="c4">0</span></div>
+          <div class="pill">Missed: <span id="missed">0</span></div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <button id="copyBtn">Copy Share Card</button>
+        </div>
+        <div class="scoreCard" id="shareCard"></div>
       </div>
     </div>
   </div>
 
-  <script>
-    // --- Minimal dataset (swap to "ALL countries" later) ---
-    // population is approximate; just for clues.
-    const COUNTRIES = [
-      { name: "Canada", capital: "Ottawa", population: "40M", flag: "🇨🇦" },
-      { name: "Brazil", capital: "Brasília", population: "203M", flag: "🇧🇷" },
-      { name: "Japan", capital: "Tokyo", population: "124M", flag: "🇯🇵" },
-      { name: "Kenya", capital: "Nairobi", population: "55M", flag: "🇰🇪" },
-      { name: "Norway", capital: "Oslo", population: "5.5M", flag: "🇳🇴" },
-    ];
+<script>
+/**
+ * GRIND MVP — 4 rounds global reveal, freeform guesses, closest-match feedback, final scoring.
+ *
+ * Notes:
+ * - Matching is case-insensitive, accent-insensitive, punctuation-insensitive.
+ * - You can add alias mappings (USA, UK, etc.) in ALIASES below.
+ */
 
-    // Game state
-    let current = null;
-    let round = 1; // 1 or 2
-    let revealedIndex = null;
+// --- Country list (195) ---
+const COUNTRIES = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan",
+  "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi",
+  "Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Côte d’Ivoire","Croatia","Cuba","Cyprus","Czechia",
+  "Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic",
+  "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia",
+  "Fiji","Finland","France",
+  "Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana",
+  "Haiti","Honduras","Hungary",
+  "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
+  "Jamaica","Japan","Jordan",
+  "Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan",
+  "Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg",
+  "Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar",
+  "Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway",
+  "Oman",
+  "Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal",
+  "Qatar",
+  "Romania","Russia","Rwanda",
+  "Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","State of Palestine","Sudan","Suriname","Sweden","Switzerland","Syria",
+  "Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu",
+  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
+  "Vanuatu","Vatican City","Venezuela","Vietnam",
+  "Yemen",
+  "Zambia","Zimbabwe"
+];
 
-    let streak = 0;
-    let correct = 0;
-    let played = 0;
+// Optional alias mapping (add more as you want)
+const ALIASES = new Map([
+  ["usa", "United States"],
+  ["us", "United States"],
+  ["u s a", "United States"],
+  ["uk", "United Kingdom"],
+  ["uae", "United Arab Emirates"],
+  ["cote divoire", "Côte d’Ivoire"],
+  ["ivory coast", "Côte d’Ivoire"],
+  ["cape verde", "Cabo Verde"],
+  ["czech republic", "Czechia"],
+  ["russia federation", "Russia"],
+  ["viet nam", "Vietnam"],
+  ["south korea", "South Korea"],
+  ["north korea", "North Korea"]
+]);
 
-    const el = (id) => document.getElementById(id);
+// --- State ---
+const TOTAL_ROUNDS = 4;
+let round = 1; // 1..4
+let revealLetters = 1; // 1..4
+let guessed = new Map(); // country -> roundGuessed (1..4)
+let roundCorrectSet = new Set();
+let roundWrong = []; // {guess, closest, coloredGuess, coloredClosest, distance}
+let locked = false;
 
-    function pickRandomCountry() {
-      return COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)];
+// --- DOM helpers ---
+const el = (id) => document.getElementById(id);
+
+function stripDiacritics(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function norm(s){
+  // Lowercase, remove diacritics, remove punctuation except spaces, collapse whitespace
+  const t = stripDiacritics(s)
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z\s-]/g, " ")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  // map aliases
+  if (ALIASES.has(t)) return norm(ALIASES.get(t));
+  return t;
+}
+
+function countryKey(country){
+  // normalized key for lookup
+  return norm(country);
+}
+
+const COUNTRY_BY_KEY = (() => {
+  const m = new Map();
+  for (const c of COUNTRIES) m.set(countryKey(c), c);
+  return m;
+})();
+
+function groupByFirstLetter(list){
+  const groups = new Map();
+  for (const name of list.slice().sort((a,b)=>a.localeCompare(b))){
+    const first = name[0].toUpperCase();
+    if (!groups.has(first)) groups.set(first, []);
+    groups.get(first).push(name);
+  }
+  return groups;
+}
+
+function maskedName(name, revealCount){
+  // Reveal N letters in sequence, ignoring spaces and punctuation (but keep them visible)
+  let revealedSoFar = 0;
+  let out = "";
+  for (const ch of name){
+    const isLetter = /[A-Za-zÀ-ÿ]/.test(ch);
+    if (!isLetter) { out += ch; continue; }
+    if (revealedSoFar < revealCount){
+      out += ch;
+      revealedSoFar++;
+    } else {
+      out += "•";
     }
+  }
+  return out;
+}
 
-    function makeClue(country) {
-      // Choose one clue type per question (you can force one type if you want)
-      const types = ["flag", "capital", "population"];
-      const type = types[Math.floor(Math.random() * types.length)];
-
-      if (type === "flag") return `Clue: Flag → <strong>${country.flag}</strong>`;
-      if (type === "capital") return `Clue: Capital → <strong>${country.capital}</strong>`;
-      return `Clue: Population → <strong>${country.population}</strong>`;
+// Levenshtein distance
+function levenshtein(a, b){
+  const A = a, B = b;
+  const n = A.length, m = B.length;
+  if (n === 0) return m;
+  if (m === 0) return n;
+  const dp = Array.from({length:n+1}, ()=>Array(m+1).fill(0));
+  for (let i=0;i<=n;i++) dp[i][0]=i;
+  for (let j=0;j<=m;j++) dp[0][j]=j;
+  for (let i=1;i<=n;i++){
+    for (let j=1;j<=m;j++){
+      const cost = A[i-1] === B[j-1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i-1][j] + 1,
+        dp[i][j-1] + 1,
+        dp[i-1][j-1] + cost
+      );
     }
+  }
+  return dp[n][m];
+}
 
-    function normalize(s) {
-      // Case-insensitive, trims spaces. (No fuzzy matching.)
-      return s.trim().toLowerCase();
+function findClosestCountry(guessNorm){
+  let best = null;
+  let bestDist = Infinity;
+  for (const [key, original] of COUNTRY_BY_KEY.entries()){
+    const d = levenshtein(guessNorm, key);
+    if (d < bestDist){
+      bestDist = d;
+      best = original;
     }
+  }
+  return { country: best, distance: bestDist };
+}
 
-    function maskName(name, revealIdx) {
-      // Reveal only one letter (keep spaces/hyphens as-is)
-      const chars = name.split("");
-      return chars.map((ch, i) => {
-        if (ch === " " || ch === "-" || ch === "'") return ch;
-        if (i === revealIdx) return ch;
-        return "•";
-      }).join("");
+// Wordle-style coloring: green exact pos, yellow present elsewhere, red not present
+function colorCompare(rawGuess, rawTarget){
+  const guess = norm(rawGuess);
+  const target = norm(rawTarget);
+
+  const gChars = guess.split("");
+  const tChars = target.split("");
+
+  // Count target letters
+  const counts = new Map();
+  for (const ch of tChars) counts.set(ch, (counts.get(ch)||0)+1);
+
+  const gMark = Array(gChars.length).fill("r");
+
+  // Greens
+  for (let i=0;i<gChars.length;i++){
+    if (i < tChars.length && gChars[i] === tChars[i]){
+      gMark[i] = "g";
+      counts.set(gChars[i], counts.get(gChars[i]) - 1);
     }
-
-    function startNewQuestion() {
-      current = pickRandomCountry();
-      round = 1;
-      revealedIndex = null;
-
-      el("roundPill").textContent = "Round 1";
-      el("maskedName").style.display = "none";
-      el("maskedName").textContent = "";
-
-      el("clueText").innerHTML = makeClue(current);
-      el("msg").textContent = "";
-      el("msg").className = "msg";
-
-      el("guessInput").value = "";
-      el("guessInput").disabled = false;
-      el("submitBtn").disabled = false;
-      el("skipBtn").disabled = false;
-
-      el("nextBtn").style.display = "none";
-      el("guessInput").focus();
+  }
+  // Yellows
+  for (let i=0;i<gChars.length;i++){
+    if (gMark[i] === "g") continue;
+    const ch = gChars[i];
+    const cnt = counts.get(ch) || 0;
+    if (cnt > 0){
+      gMark[i] = "y";
+      counts.set(ch, cnt - 1);
     }
+  }
 
-    function endQuestion(revealedAnswer) {
-      played += 1;
-      el("played").textContent = String(played);
+  // Render colored guess
+  const coloredGuess = gChars.map((ch,i)=>`<span class="${gMark[i]}">${escapeHtml(ch)}</span>`).join("");
 
-      el("guessInput").disabled = true;
-      el("submitBtn").disabled = true;
-      el("skipBtn").disabled = true;
+  // Also color the target relative to guess (nice for “closest match” display)
+  // We'll just show target plain, but you could color it too. Keeping simple:
+  const coloredTarget = escapeHtml(target);
 
-      if (revealedAnswer) {
-        el("msg").innerHTML = `Answer: <strong>${current.name}</strong>`;
-      }
+  return { coloredGuess, coloredTarget, guess, target };
+}
 
-      el("nextBtn").style.display = "inline-block";
-      el("nextBtn").focus();
-    }
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, (c)=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
 
-    function handleCorrect() {
-      correct += 1;
-      streak += 1;
+// --- Rendering ---
+function renderBoard(){
+  const groups = groupByFirstLetter(COUNTRIES);
+  const board = el("board");
+  board.innerHTML = "";
 
-      el("correct").textContent = String(correct);
-      el("streak").textContent = String(streak);
+  for (const [letter, items] of groups.entries()){
+    const hdr = document.createElement("div");
+    hdr.className = "letterHdr";
+    hdr.textContent = letter;
+    board.appendChild(hdr);
 
-      el("msg").textContent = "✅ Correct!";
-      el("msg").className = "msg good";
-      endQuestion(false);
-    }
+    for (const name of items){
+      const row = document.createElement("div");
+      row.className = "countryRow" + (guessed.has(name) ? " guessed" : "");
 
-    function handleWrong() {
-      if (round === 1) {
-        // Move to round 2: reveal one random letter index (letters only)
-        round = 2;
-        el("roundPill").textContent = "Round 2";
+      const left = document.createElement("div");
+      left.className = "mask";
+      left.textContent = guessed.has(name) ? name : maskedName(name, revealLetters);
 
-        const name = current.name;
-        const viable = [];
-        for (let i = 0; i < name.length; i++) {
-          const ch = name[i];
-          if (ch !== " " && ch !== "-" && ch !== "'") viable.push(i);
-        }
-        revealedIndex = viable[Math.floor(Math.random() * viable.length)];
-
-        el("maskedName").style.display = "block";
-        el("maskedName").textContent = maskName(name, revealedIndex);
-
-        el("msg").textContent = "❌ Wrong. Round 2: one letter revealed.";
-        el("msg").className = "msg bad";
-        el("guessInput").value = "";
-        el("guessInput").focus();
+      const right = document.createElement("div");
+      right.className = "rightCol";
+      if (guessed.has(name)){
+        right.textContent = `✓ R${guessed.get(name)}`;
       } else {
-        // Final miss
-        streak = 0;
-        el("streak").textContent = String(streak);
-
-        el("msg").textContent = "❌ Wrong again.";
-        el("msg").className = "msg bad";
-        endQuestion(true);
+        right.textContent = "";
       }
+
+      row.appendChild(left);
+      row.appendChild(right);
+      board.appendChild(row);
     }
+  }
 
-    function submitGuess() {
-      const guess = el("guessInput").value;
-      if (!guess.trim()) return;
+  el("guessedCount").textContent = String(guessed.size);
+  el("totalCount").textContent = String(COUNTRIES.length);
+}
 
-      if (normalize(guess) === normalize(current.name)) {
-        handleCorrect();
-      } else {
-        handleWrong();
+function renderReview(){
+  const review = el("review");
+  review.innerHTML = "";
+
+  // Correct summary
+  const correctArr = Array.from(roundCorrectSet).sort((a,b)=>a.localeCompare(b));
+  const correctBox = document.createElement("div");
+  correctBox.className = "feedbackItem";
+  correctBox.innerHTML = `
+    <div><b class="good">Correct this round (${correctArr.length})</b></div>
+    <div class="small">${correctArr.length ? escapeHtml(correctArr.join(", ")) : "—"}</div>
+  `;
+  review.appendChild(correctBox);
+
+  // Wrong items
+  for (const item of roundWrong){
+    const div = document.createElement("div");
+    div.className = "feedbackItem";
+    div.innerHTML = `
+      <div><b class="bad">Wrong:</b> <span class="cmp">${escapeHtml(norm(item.guess))}</span></div>
+      <div class="small">Closest match: <b>${escapeHtml(item.closest)}</b> (distance ${item.distance})</div>
+      <div class="small" style="margin-top:6px;">
+        <div class="cmp">Your guess: ${item.coloredGuess}</div>
+        <div class="cmp">Target: ${escapeHtml(norm(item.closest))}</div>
+        <div class="small">Green = same letter same place • Yellow = same letter different place • Red = not in word</div>
+      </div>
+    `;
+    review.appendChild(div);
+  }
+
+  el("roundCorrect").textContent = String(roundCorrectSet.size);
+  el("roundWrong").textContent = String(roundWrong.length);
+}
+
+// --- Game flow ---
+function setLocked(isLocked){
+  locked = isLocked;
+  el("guessBox").disabled = isLocked;
+  el("submitBtn").disabled = isLocked;
+}
+
+function resetRoundStats(){
+  roundCorrectSet = new Set();
+  roundWrong = [];
+  el("msg").textContent = "";
+  el("msg").className = "msg";
+  el("review").innerHTML = "";
+  el("roundCorrect").textContent = "0";
+  el("roundWrong").textContent = "0";
+}
+
+function startGame(){
+  round = 1;
+  revealLetters = 1;
+  guessed = new Map();
+  resetRoundStats();
+
+  el("finalPanel").style.display = "none";
+  el("nextBtn").style.display = "none";
+  el("submitBtn").style.display = "inline-block";
+  el("guessBox").value = "";
+
+  el("roundPill").textContent = `Round ${round} / ${TOTAL_ROUNDS}`;
+  el("revealPill").textContent = String(revealLetters);
+
+  setLocked(false);
+  renderBoard();
+}
+
+function submitRound(){
+  resetRoundStats();
+  const raw = el("guessBox").value || "";
+  const lines = raw.split("\n").map(s=>s.trim()).filter(Boolean);
+
+  // dedupe by normalized string
+  const seen = new Set();
+  const guesses = [];
+  for (const l of lines){
+    const n = norm(l);
+    if (!n) continue;
+    if (seen.has(n)) continue;
+    seen.add(n);
+    guesses.push(l);
+  }
+
+  for (const guessRaw of guesses){
+    const k = norm(guessRaw);
+    const matched = COUNTRY_BY_KEY.get(k);
+
+    if (matched && !guessed.has(matched)){
+      guessed.set(matched, round);
+      roundCorrectSet.add(matched);
+    } else {
+      // wrong OR already guessed
+      if (matched && guessed.has(matched)){
+        // already guessed earlier — treat as neutral (ignore)
+        continue;
       }
+      const closest = findClosestCountry(k);
+      const colored = colorCompare(guessRaw, closest.country);
+      roundWrong.push({
+        guess: guessRaw,
+        closest: closest.country,
+        distance: closest.distance,
+        coloredGuess: colored.coloredGuess
+      });
     }
+  }
 
-    // Events
-    el("submitBtn").addEventListener("click", submitGuess);
-    el("guessInput").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") submitGuess();
-    });
-    el("skipBtn").addEventListener("click", () => {
-      streak = 0;
-      el("streak").textContent = String(streak);
-      el("msg").textContent = "Skipped.";
-      el("msg").className = "msg";
-      endQuestion(true);
-    });
-    el("nextBtn").addEventListener("click", startNewQuestion);
+  // lock and show review
+  setLocked(true);
+  renderBoard();
+  renderReview();
 
-    // Start
-    startNewQuestion();
-  </script>
+  // messaging + next button
+  if (round < TOTAL_ROUNDS){
+    el("msg").textContent = "Round submitted. Review results, then continue.";
+    el("msg").className = "msg";
+    el("nextBtn").style.display = "inline-block";
+  } else {
+    el("msg").textContent = "Final round submitted. Scoring…";
+    el("msg").className = "msg";
+    showFinalScore();
+  }
+}
+
+function nextRound(){
+  if (round >= TOTAL_ROUNDS) return;
+  round += 1;
+  revealLetters = round; // 1..4 letters
+  el("roundPill").textContent = `Round ${round} / ${TOTAL_ROUNDS}`;
+  el("revealPill").textContent = String(revealLetters);
+
+  el("guessBox").value = "";
+  resetRoundStats();
+  setLocked(false);
+  renderBoard();
+
+  if (round === TOTAL_ROUNDS){
+    el("nextBtn").style.display = "none";
+  }
+}
+
+function showFinalScore(){
+  // Score rules:
+  // +5 (R1), +3 (R2), +1 (R3), +0 (R4), -5 missed
+  const pts = {1:5,2:3,3:1,4:0};
+  let score = 0;
+  let c1=0,c2=0,c3=0,c4=0,missed=0;
+
+  for (const c of COUNTRIES){
+    if (guessed.has(c)){
+      const r = guessed.get(c);
+      score += pts[r] ?? 0;
+      if (r===1) c1++; else if (r===2) c2++; else if (r===3) c3++; else if (r===4) c4++;
+    } else {
+      score -= 5;
+      missed++;
+    }
+  }
+
+  el("finalScore").textContent = String(score);
+  el("c1").textContent = String(c1);
+  el("c2").textContent = String(c2);
+  el("c3").textContent = String(c3);
+  el("c4").textContent = String(c4);
+  el("missed").textContent = String(missed);
+
+  // Share card (copy/paste friendly)
+  // You can make this fancier (emoji bars etc.)
+  const date = new Date().toISOString().slice(0,10);
+  const share =
+`GRIND — Country Recall
+Date: ${date}
+Score: ${score}
+
+R1: ${c1}  (+5)
+R2: ${c2}  (+3)
+R3: ${c3}  (+1)
+R4: ${c4}  (+0)
+Missed: ${missed} (-5)
+
+Total guessed: ${guessed.size} / ${COUNTRIES.length}
+`;
+  el("shareCard").textContent = share;
+  el("finalPanel").style.display = "block";
+
+  el("submitBtn").style.display = "none";
+  el("nextBtn").style.display = "none";
+}
+
+async function copyShareCard(){
+  const text = el("shareCard").textContent;
+  try{
+    await navigator.clipboard.writeText(text);
+    el("msg").textContent = "Copied share card to clipboard ✅";
+    el("msg").className = "msg good";
+  }catch{
+    el("msg").textContent = "Couldn’t auto-copy (browser blocked). You can manually select + copy the share card.";
+    el("msg").className = "msg bad";
+  }
+}
+
+// --- Wire up ---
+el("submitBtn").addEventListener("click", submitRound);
+el("nextBtn").addEventListener("click", nextRound);
+el("restartBtn").addEventListener("click", startGame);
+el("copyBtn").addEventListener("click", copyShareCard);
+
+// Start
+startGame();
+</script>
 </body>
 </html>

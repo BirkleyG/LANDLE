@@ -1,587 +1,755 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GRIND — Country Guessing Game</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>LANDLE 🌍</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-    body{ margin:0; background:#0b1220; color:#e7eefc; }
-    .wrap{ max-width:1100px; margin:0 auto; padding:20px; display:grid; gap:14px; grid-template-columns: 1.3fr 1fr; }
-    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
-    .card{ background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px; }
-    h1{ margin:0 0 8px; font-size:20px; }
-    h2{ margin:0 0 10px; font-size:16px; opacity:.95; }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .pill{ padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(0,0,0,.18); font-size:13px; }
-    button{
-      padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.10); color:#e7eefc; cursor:pointer;
+    :root{
+      --bg:#080e1a; --surface:rgba(255,255,255,0.055); --border:rgba(255,255,255,0.10);
+      --text:#ddeeff; --muted:rgba(221,238,255,0.45);
+      --green:#4fffb0; --yellow:#ffe76a; --red:#ff6b6b; --accent:#5b8fff;
+      font-family:'Syne',system-ui,sans-serif;
     }
-    button:hover{ background:rgba(255,255,255,.16); }
-    button:disabled{ opacity:.55; cursor:not-allowed; }
-    textarea{
-      width:100%; min-height:140px; padding:10px 12px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.18); background:rgba(0,0,0,.25); color:#e7eefc;
-      outline:none; resize:vertical;
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;}
+    body::before{
+      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:linear-gradient(rgba(91,143,255,0.04) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(91,143,255,0.04) 1px,transparent 1px);
+      background-size:40px 40px;
     }
-    .small{ font-size:13px; opacity:.9; }
-    .list{
-      max-height: 540px; overflow:auto; padding:10px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18);
+    .wrap{
+      position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px;
+      display:grid;gap:16px;grid-template-columns:1.6fr 1fr;
     }
-    .letterHdr{ margin:12px 0 6px; font-weight:700; opacity:.95; }
-    .countryRow{
-      display:flex; justify-content:space-between; gap:10px;
-      padding:6px 8px; border-radius:10px;
-    }
-    .countryRow.guessed{ background:rgba(120,255,170,.10); }
-    .mask{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      letter-spacing:1px;
-    }
-    .rightCol{ display:flex; gap:10px; align-items:center; opacity:.9; font-size:13px; }
-    .msg{ min-height:24px; margin-top:10px; }
-    .good{ color:#b8ffcf; }
-    .bad{ color:#ffb4b4; }
+    @media(max-width:900px){.wrap{grid-template-columns:1fr;}}
 
-    /* Wordle-ish coloring */
-    .cmp{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size:14px; }
-    .g{ background:rgba(0,255,140,.25); border:1px solid rgba(0,255,140,.35); padding:1px 4px; border-radius:6px; }
-    .y{ background:rgba(255,215,0,.22); border:1px solid rgba(255,215,0,.35); padding:1px 4px; border-radius:6px; }
-    .r{ background:rgba(255,80,80,.22); border:1px solid rgba(255,80,80,.35); padding:1px 4px; border-radius:6px; }
-    .feedbackItem{ padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18); margin-top:10px; }
-    .grid2{ display:grid; grid-template-columns: 1fr; gap:10px; }
-    .scoreCard{
-      white-space:pre; overflow:auto; padding:10px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    /* ── Header ── */
+    header{
+      grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+      padding:16px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);
+    }
+    header h1{
+      margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px;
+      background:linear-gradient(135deg,#5b8fff,#4fffb0);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .tagline{margin:0;font-size:12px;color:var(--muted);}
+    .header-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+    /* Live score display */
+    .score-live{
+      display:flex;align-items:center;gap:10px;
+      padding:8px 16px;border-radius:12px;
+      background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);
+    }
+    .score-live .score-num{
+      font-family:'DM Mono',monospace;font-size:22px;font-weight:700;
+      color:var(--accent);transition:color 0.3s;min-width:48px;text-align:right;
+    }
+    .score-live .score-num.up{color:var(--green);}
+    .score-live .score-num.down{color:var(--red);}
+    .score-live .score-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;}
+    h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;}
+    .pill{padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,0.25);font-size:12px;font-family:'DM Mono',monospace;white-space:nowrap;}
+    .pill b{color:var(--accent);}
+    .stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+
+    /* ── Board ── */
+    .board-scroll{
+      max-height:72vh;overflow-y:auto;padding-right:4px;
+      scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;
+    }
+    .letter-group{margin-bottom:2px;}
+    .letter-hdr{
+      font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
+      color:var(--muted);padding:6px 6px 3px;margin-bottom:2px;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .crow{
+      display:flex;align-items:center;padding:2px 4px;border-radius:8px;
+      transition:background 0.15s;min-height:24px;
+    }
+    .crow:focus-within:not(.guessed){background:rgba(91,143,255,0.08);}
+    .crow.guessed{background:rgba(79,255,176,0.07);}
+    .pfx{
+      font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;
+      color:var(--text);flex-shrink:0;user-select:none;white-space:pre;
+    }
+    .inp-wrap{flex:1;min-width:0;position:relative;height:20px;}
+    .cinput{
+      position:absolute;inset:0;width:100%;padding:0;
+      background:transparent;border:none;outline:none;
+      font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;
+      color:var(--text);caret-color:var(--accent);z-index:2;
+    }
+    .cinput:disabled{cursor:default;}
+    .ghost{
+      position:absolute;inset:0;display:flex;align-items:center;
+      font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;
+      pointer-events:none;white-space:pre;overflow:hidden;z-index:1;
+    }
+    .gh-typed{visibility:hidden;}
+    .gh-rem span{padding:0 1px;border-radius:3px;}
+    .gh-rem .g{background:rgba(79,255,176,0.28);border:1px solid rgba(79,255,176,0.5);}
+    .gh-rem .y{background:rgba(255,231,106,0.28);border:1px solid rgba(255,231,106,0.5);}
+    .gh-rem .r{background:rgba(255,107,107,0.28);border:1px solid rgba(255,107,107,0.5);}
+    .gh-rem .w{background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.35);color:rgba(221,238,255,0.5);}
+    .gh-rem .k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
+    .badge{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;padding-left:6px;white-space:nowrap;}
+    .guessed .badge{color:var(--green);}
+
+    /* ── Right panel ── */
+    button{
+      padding:9px 16px;border-radius:10px;border:1px solid var(--border);
+      background:rgba(255,255,255,0.08);color:var(--text);cursor:pointer;
+      font-size:13px;font-family:'Syne',sans-serif;font-weight:700;
+      transition:all 0.15s;letter-spacing:0.3px;
+    }
+    button:hover:not(:disabled){background:rgba(255,255,255,0.15);}
+    button:disabled{opacity:0.35;cursor:not-allowed;}
+    button.primary{background:rgba(91,143,255,0.22);border-color:rgba(91,143,255,0.45);color:#a8c4ff;}
+    button.primary:hover:not(:disabled){background:rgba(91,143,255,0.35);}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+    .err-banner{
+      padding:10px 12px;border-radius:10px;margin-bottom:8px;
+      border:1px solid rgba(255,107,107,0.3);background:rgba(255,80,80,0.1);
+      color:#ffd0d0;font-size:13px;display:none;
+    }
+    .round-progress{display:flex;gap:5px;align-items:center;}
+    .round-dot{width:9px;height:9px;border-radius:999px;background:var(--border);transition:background 0.3s;}
+    .round-dot.active{background:var(--accent);}
+    .round-dot.done{background:var(--green);}
+    .legend{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+    .ls{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:3px;vertical-align:middle;}
+    .lg{background:rgba(79,255,176,0.5);}
+    .ly{background:rgba(255,231,106,0.5);}
+    .lr{background:rgba(255,107,107,0.5);}
+    .lw{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);}
+    .lk{background:rgba(40,40,60,0.8);border:1px solid rgba(120,120,160,0.5);}
+
+    /* ── Modals (shared) ── */
+    .modal-backdrop{
+      position:fixed;inset:0;z-index:100;
+      background:rgba(8,14,26,0.85);backdrop-filter:blur(8px);
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity 0.22s;
+    }
+    .modal-backdrop.open{opacity:1;pointer-events:all;}
+    .modal{
+      background:#0f1a2e;border:1px solid rgba(255,255,255,0.15);
+      border-radius:20px;padding:32px 36px;min-width:300px;max-width:460px;
+      width:92%;text-align:center;
+      transform:translateY(14px) scale(0.97);
+      transition:transform 0.22s;
+      box-shadow:0 28px 70px rgba(0,0,0,0.7);
+    }
+    .modal-backdrop.open .modal{transform:translateY(0) scale(1);}
+    .modal-title{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);}
+    .modal-heading{
+      font-size:22px;font-weight:800;margin-bottom:20px;
+      background:linear-gradient(135deg,#5b8fff,#4fffb0);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .mstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;}
+    .mstat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:14px 8px;}
+    .mstat .num{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;}
+    .mstat .lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+    .mstat.mc .num{color:var(--green);}
+    .mstat.mw .num{color:var(--red);}
+    .mstat.mb .num{color:var(--muted);}
+
+    /* Points animation */
+    .pts-delta{
+      font-size:32px;font-weight:800;margin:6px 0 4px;
+      font-family:'DM Mono',monospace;
+      opacity:0;transform:scale(0.6);
+      transition:opacity 0.35s,transform 0.35s;
+    }
+    .pts-delta.show{opacity:1;transform:scale(1);}
+    .pts-delta.pos{color:var(--green);}
+    .pts-delta.neg{color:var(--red);}
+    .pts-breakdown{font-size:12px;color:var(--muted);margin-bottom:16px;min-height:18px;}
+    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+    .modal-sub b{color:var(--text);}
+
+    .modal-close{
+      width:100%;padding:12px;border-radius:12px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,rgba(91,143,255,0.3),rgba(79,255,176,0.2));
+      border:1px solid rgba(91,143,255,0.4);color:var(--text);
+      font-size:15px;font-family:'Syne',sans-serif;font-weight:700;
+      transition:all 0.15s;letter-spacing:0.3px;
+    }
+    .modal-close:hover{background:linear-gradient(135deg,rgba(91,143,255,0.45),rgba(79,255,176,0.3));}
+
+    /* Final score modal extras */
+    .final-score-num{
+      font-size:56px;font-weight:800;font-family:'DM Mono',monospace;
+      line-height:1;margin:8px 0 4px;color:var(--accent);
+    }
+    .final-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0;}
+    .final-stat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;text-align:left;}
+    .final-stat .fs-num{font-size:20px;font-weight:800;font-family:'DM Mono',monospace;}
+    .final-stat .fs-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+    .share-card{
+      white-space:pre;padding:14px;border-radius:12px;margin-top:14px;
+      border:1px solid var(--border);background:rgba(0,0,0,0.3);
+      font-family:'DM Mono',monospace;font-size:12px;line-height:1.7;
+      text-align:left;
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- LEFT: Game Board -->
-    <div class="card">
-      <div class="row" style="justify-content:space-between;">
+<div class="wrap">
+  <header>
+    <div>
+      <h1>LANDLE 🌍</h1>
+      <p class="tagline">Name every country from memory. 4 rounds, more letters revealed each round.</p>
+    </div>
+    <div class="header-right">
+      <div class="pill" id="roundPill">Round <b>1</b> / 4</div>
+      <div class="pill">Letters: <b><span id="revealPill">1</span></b></div>
+      <div class="round-progress" id="roundDots"></div>
+      <div class="score-live">
         <div>
-          <h1>🌍 GRIND</h1>
-          <div class="small">Free recall. Type any countries you remember. 4 rounds, more letters revealed each round.</div>
+          <div class="score-lbl">Score</div>
+          <div class="score-num" id="liveScore">0</div>
         </div>
-        <div class="row">
-          <div class="pill" id="roundPill">Round 1 / 4</div>
-          <div class="pill">Revealed letters: <span id="revealPill">1</span></div>
-        </div>
-      </div>
-
-      <div style="margin-top:12px;" class="row">
-        <div class="pill">Guessed: <b><span id="guessedCount">0</span></b> / <span id="totalCount">195</span></div>
-        <div class="pill">This round correct: <b><span id="roundCorrect">0</span></b></div>
-        <div class="pill">This round wrong: <b><span id="roundWrong">0</span></b></div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <h2>Board</h2>
-        <div class="list" id="board"></div>
       </div>
     </div>
+  </header>
 
-    <!-- RIGHT: Input + Review -->
-    <div class="card">
-      <h2>Enter guesses (one per line)</h2>
-      <textarea id="guessBox" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"
-        placeholder="Australia
-Austria
-Azerbaijan
-..."></textarea>
-
-      <div class="row" style="margin-top:10px;">
-        <button id="submitBtn">Submit Round</button>
-        <button id="nextBtn" style="display:none;">Next Round</button>
-        <button id="restartBtn">Restart</button>
-      </div>
-
-      <div class="msg" id="msg"></div>
-
-      <div style="margin-top:12px;">
-        <h2>Round Review</h2>
-        <div class="small">Wrong guesses show closest country + letter match coloring (green exact, yellow misplaced, red wrong).</div>
-        <div id="review" class="grid2"></div>
-      </div>
-
-      <div id="finalPanel" style="display:none; margin-top:12px;">
-        <h2>Final Score</h2>
-        <div class="row">
-          <div class="pill">Total score: <b><span id="finalScore">0</span></b></div>
-          <div class="pill">R1: <span id="c1">0</span></div>
-          <div class="pill">R2: <span id="c2">0</span></div>
-          <div class="pill">R3: <span id="c3">0</span></div>
-          <div class="pill">R4: <span id="c4">0</span></div>
-          <div class="pill">Missed: <span id="missed">0</span></div>
-        </div>
-
-        <div class="row" style="margin-top:10px;">
-          <button id="copyBtn">Copy Share Card</button>
-        </div>
-        <div class="scoreCard" id="shareCard"></div>
-      </div>
+  <div class="card">
+    <div class="stats-row">
+      <div class="pill">Guessed: <b><span id="guessedCount">0</span></b> / <span id="totalCount">195</span></div>
+      <div class="pill">✅ <b><span id="roundCorrect">0</span></b></div>
+      <div class="pill">❌ <b><span id="roundWrong">0</span></b></div>
     </div>
+    <div class="board-scroll" id="board"></div>
   </div>
 
+  <div class="card">
+    <h2>Controls</h2>
+    <div class="btn-row">
+      <button class="primary" id="submitBtn">Submit Round</button>
+      <button id="restartBtn">↺ Restart</button>
+    </div>
+    <div class="err-banner" id="errBanner"></div>
+    <div class="legend">
+      <b style="color:var(--text)">Hints:</b>
+      <span><span class="ls lg"></span>right place</span>
+      <span><span class="ls ly"></span>wrong place</span>
+      <span><span class="ls lr"></span>not in name</span>
+      <span><span class="ls lw"></span>missing</span>
+      <span><span class="ls lk"></span>extra</span>
+    </div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+      <b style="color:var(--text)">Scoring:</b> Correct R1 +5 · R2 +3 · R3 +1 · R4 +0<br>
+      Wrong: each 🟥 −2 · each 🟨⬜⬛ −1 · Unguessed at end −3
+    </div>
+  </div>
+</div>
+
+<!-- Round summary modal -->
+<div class="modal-backdrop" id="roundModal">
+  <div class="modal">
+    <p class="modal-title">Round Complete</p>
+    <div class="modal-heading" id="mRoundLabel">Round 1 / 4</div>
+    <div class="mstats">
+      <div class="mstat mc"><div class="num" id="mCorrect">0</div><div class="lbl">Correct</div></div>
+      <div class="mstat mw"><div class="num" id="mWrong">0</div><div class="lbl">Wrong</div></div>
+      <div class="mstat mb"><div class="num" id="mBlank">0</div><div class="lbl">Blank</div></div>
+    </div>
+    <div class="pts-delta" id="ptsDelta">+0</div>
+    <div class="pts-breakdown" id="ptsBreakdown"></div>
+    <div class="modal-sub" id="mSub"></div>
+    <button class="modal-close" id="roundModalClose">Continue →</button>
+  </div>
+</div>
+
+<!-- Final score modal -->
+<div class="modal-backdrop" id="finalModal">
+  <div class="modal">
+    <p class="modal-title">Game Over</p>
+    <div class="modal-heading">Final Score</div>
+    <div class="final-score-num" id="finalScoreNum">0</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="finalPct"></div>
+    <div class="final-breakdown">
+      <div class="final-stat"><div class="fs-num" style="color:var(--green)" id="f1">0</div><div class="fs-lbl">🟩 R1 (+5 each)</div></div>
+      <div class="final-stat"><div class="fs-num" style="color:#5b8fff" id="f2">0</div><div class="fs-lbl">🟦 R2 (+3 each)</div></div>
+      <div class="final-stat"><div class="fs-num" style="color:var(--yellow)" id="f3">0</div><div class="fs-lbl">🟨 R3 (+1 each)</div></div>
+      <div class="final-stat"><div class="fs-num" style="color:var(--muted)" id="f4">0</div><div class="fs-lbl">⬛ R4 (+0)</div></div>
+      <div class="final-stat" style="grid-column:1/-1"><div class="fs-num" style="color:var(--red)" id="fMissed">0</div><div class="fs-lbl">❌ Missed (−3 each)</div></div>
+    </div>
+    <button class="modal-close" id="copyBtn" style="margin-bottom:10px;">📋 Copy Share Card</button>
+    <button class="modal-close" id="finalRestartBtn" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);">↺ Play Again</button>
+    <div class="share-card" id="shareCard"></div>
+  </div>
+</div>
+
 <script>
-/**
- * GRIND MVP — 4 rounds global reveal, freeform guesses, closest-match feedback, final scoring.
- *
- * Notes:
- * - Matching is case-insensitive, accent-insensitive, punctuation-insensitive.
- * - You can add alias mappings (USA, UK, etc.) in ALIASES below.
- */
+(function(){
+  /* ── Countries ─────────────────────────────────────────────────────────── */
+  const COUNTRIES=[
+    "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan",
+    "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi",
+    "Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Côte d'Ivoire","Croatia","Cuba","Cyprus","Czechia",
+    "Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic",
+    "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia",
+    "Fiji","Finland","France",
+    "Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana",
+    "Haiti","Honduras","Hungary",
+    "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
+    "Jamaica","Japan","Jordan",
+    "Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan",
+    "Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg",
+    "Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar",
+    "Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway",
+    "Oman",
+    "Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal",
+    "Qatar",
+    "Romania","Russia","Rwanda",
+    "Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","State of Palestine","Sudan","Suriname","Sweden","Switzerland","Syria",
+    "Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu",
+    "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
+    "Vanuatu","Vatican City","Venezuela","Vietnam",
+    "Yemen",
+    "Zambia","Zimbabwe"
+  ];
 
-// --- Country list (195) ---
-const COUNTRIES = [
-  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan",
-  "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi",
-  "Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Côte d’Ivoire","Croatia","Cuba","Cyprus","Czechia",
-  "Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic",
-  "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia",
-  "Fiji","Finland","France",
-  "Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana",
-  "Haiti","Honduras","Hungary",
-  "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
-  "Jamaica","Japan","Jordan",
-  "Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan",
-  "Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg",
-  "Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar",
-  "Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway",
-  "Oman",
-  "Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal",
-  "Qatar",
-  "Romania","Russia","Rwanda",
-  "Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","State of Palestine","Sudan","Suriname","Sweden","Switzerland","Syria",
-  "Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu",
-  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
-  "Vanuatu","Vatican City","Venezuela","Vietnam",
-  "Yemen",
-  "Zambia","Zimbabwe"
-];
+  const ALIASES=new Map([
+    ["usa","united states"],["us","united states"],["u s a","united states"],
+    ["uk","united kingdom"],["uae","united arab emirates"],
+    ["cote d ivoire","cote divoire"],["ivory coast","cote divoire"],
+    ["cape verde","cabo verde"],["czech republic","czechia"],
+    ["viet nam","vietnam"],["drc","democratic republic of the congo"],
+    ["dr congo","democratic republic of the congo"],
+    ["republic of the congo","congo"],["palestine","state of palestine"],
+    ["holy see","vatican city"],["burma","myanmar"],
+    ["swaziland","eswatini"],["east timor","timor leste"],
+    ["trinidad","trinidad and tobago"],["tobago","trinidad and tobago"],
+    ["macedonia","north macedonia"],
+  ]);
 
-// Optional alias mapping (add more as you want)
-const ALIASES = new Map([
-  ["usa", "United States"],
-  ["us", "United States"],
-  ["u s a", "United States"],
-  ["uk", "United Kingdom"],
-  ["uae", "United Arab Emirates"],
-  ["cote divoire", "Côte d’Ivoire"],
-  ["ivory coast", "Côte d’Ivoire"],
-  ["cape verde", "Cabo Verde"],
-  ["czech republic", "Czechia"],
-  ["russia federation", "Russia"],
-  ["viet nam", "Vietnam"],
-  ["south korea", "South Korea"],
-  ["north korea", "North Korea"]
-]);
+  /* ── Scoring constants ────────────────────────────────────────────────── */
+  const ROUND_PTS={1:5,2:3,3:1,4:0};
+  const PEN_RED=2, PEN_OTHER=1, PEN_MISSED=3;
 
-// --- State ---
-const TOTAL_ROUNDS = 4;
-let round = 1; // 1..4
-let revealLetters = 1; // 1..4
-let guessed = new Map(); // country -> roundGuessed (1..4)
-let roundCorrectSet = new Set();
-let roundWrong = []; // {guess, closest, coloredGuess, coloredClosest, distance}
-let locked = false;
+  /* ── State ────────────────────────────────────────────────────────────── */
+  const TOTAL_ROUNDS=4;
+  let round=1, revealLetters=1;
+  let guessed=new Map();   // country -> round#
+  let hintFor=new Map();   // country -> [{char,cls}] full hint
+  let totalScore=0;        // running score (updated after each round)
 
-// --- DOM helpers ---
-const el = (id) => document.getElementById(id);
-
-function stripDiacritics(s){
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-function norm(s){
-  // Lowercase, remove diacritics, remove punctuation except spaces, collapse whitespace
-  const t = stripDiacritics(s)
-    .toLowerCase()
-    .replace(/['’]/g, "")
-    .replace(/[^a-z\s-]/g, " ")
-    .replace(/-/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  // map aliases
-  if (ALIASES.has(t)) return norm(ALIASES.get(t));
-  return t;
-}
-
-function countryKey(country){
-  // normalized key for lookup
-  return norm(country);
-}
-
-const COUNTRY_BY_KEY = (() => {
-  const m = new Map();
-  for (const c of COUNTRIES) m.set(countryKey(c), c);
-  return m;
-})();
-
-function groupByFirstLetter(list){
-  const groups = new Map();
-  for (const name of list.slice().sort((a,b)=>a.localeCompare(b))){
-    const first = name[0].toUpperCase();
-    if (!groups.has(first)) groups.set(first, []);
-    groups.get(first).push(name);
-  }
-  return groups;
-}
-
-function maskedName(name, revealCount){
-  // Reveal N letters in sequence, ignoring spaces and punctuation (but keep them visible)
-  let revealedSoFar = 0;
-  let out = "";
-  for (const ch of name){
-    const isLetter = /[A-Za-zÀ-ÿ]/.test(ch);
-    if (!isLetter) { out += ch; continue; }
-    if (revealedSoFar < revealCount){
-      out += ch;
-      revealedSoFar++;
-    } else {
-      out += "•";
-    }
-  }
-  return out;
-}
-
-// Levenshtein distance
-function levenshtein(a, b){
-  const A = a, B = b;
-  const n = A.length, m = B.length;
-  if (n === 0) return m;
-  if (m === 0) return n;
-  const dp = Array.from({length:n+1}, ()=>Array(m+1).fill(0));
-  for (let i=0;i<=n;i++) dp[i][0]=i;
-  for (let j=0;j<=m;j++) dp[0][j]=j;
-  for (let i=1;i<=n;i++){
-    for (let j=1;j<=m;j++){
-      const cost = A[i-1] === B[j-1] ? 0 : 1;
-      dp[i][j] = Math.min(
-        dp[i-1][j] + 1,
-        dp[i][j-1] + 1,
-        dp[i-1][j-1] + cost
-      );
-    }
-  }
-  return dp[n][m];
-}
-
-function findClosestCountry(guessNorm){
-  let best = null;
-  let bestDist = Infinity;
-  for (const [key, original] of COUNTRY_BY_KEY.entries()){
-    const d = levenshtein(guessNorm, key);
-    if (d < bestDist){
-      bestDist = d;
-      best = original;
-    }
-  }
-  return { country: best, distance: bestDist };
-}
-
-// Wordle-style coloring: green exact pos, yellow present elsewhere, red not present
-function colorCompare(rawGuess, rawTarget){
-  const guess = norm(rawGuess);
-  const target = norm(rawTarget);
-
-  const gChars = guess.split("");
-  const tChars = target.split("");
-
-  // Count target letters
-  const counts = new Map();
-  for (const ch of tChars) counts.set(ch, (counts.get(ch)||0)+1);
-
-  const gMark = Array(gChars.length).fill("r");
-
-  // Greens
-  for (let i=0;i<gChars.length;i++){
-    if (i < tChars.length && gChars[i] === tChars[i]){
-      gMark[i] = "g";
-      counts.set(gChars[i], counts.get(gChars[i]) - 1);
-    }
-  }
-  // Yellows
-  for (let i=0;i<gChars.length;i++){
-    if (gMark[i] === "g") continue;
-    const ch = gChars[i];
-    const cnt = counts.get(ch) || 0;
-    if (cnt > 0){
-      gMark[i] = "y";
-      counts.set(ch, cnt - 1);
-    }
+  /* ── Utils ────────────────────────────────────────────────────────────── */
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function stripDia(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+  function norm(s){
+    const t=stripDia(String(s)).toLowerCase().replace(/['']/g,"").replace(/[^a-z\s-]/g," ").replace(/-/g," ").replace(/\s+/g," ").trim();
+    return ALIASES.get(t)??t;
   }
 
-  // Render colored guess
-  const coloredGuess = gChars.map((ch,i)=>`<span class="${gMark[i]}">${escapeHtml(ch)}</span>`).join("");
+  const BY_KEY=new Map();
+  for(const c of COUNTRIES) BY_KEY.set(norm(c),c);
 
-  // Also color the target relative to guess (nice for “closest match” display)
-  // We'll just show target plain, but you could color it too. Keeping simple:
-  const coloredTarget = escapeHtml(target);
-
-  return { coloredGuess, coloredTarget, guess, target };
-}
-
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g, (c)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
-
-// --- Rendering ---
-function renderBoard(){
-  const groups = groupByFirstLetter(COUNTRIES);
-  const board = el("board");
-  board.innerHTML = "";
-
-  for (const [letter, items] of groups.entries()){
-    const hdr = document.createElement("div");
-    hdr.className = "letterHdr";
-    hdr.textContent = letter;
-    board.appendChild(hdr);
-
-    for (const name of items){
-      const row = document.createElement("div");
-      row.className = "countryRow" + (guessed.has(name) ? " guessed" : "");
-
-      const left = document.createElement("div");
-      left.className = "mask";
-      left.textContent = guessed.has(name) ? name : maskedName(name, revealLetters);
-
-      const right = document.createElement("div");
-      right.className = "rightCol";
-      if (guessed.has(name)){
-        right.textContent = `✓ R${guessed.get(name)}`;
+  /* ── Prefix reveal ────────────────────────────────────────────────────── */
+  // Returns first N letters of name INCLUDING any trailing separator,
+  // so the input always starts cleanly at a word boundary or after a separator.
+  function revealPrefix(name,n){
+    let out="",seen=0;
+    for(let i=0;i<name.length;i++){
+      const ch=name[i];
+      if(/[A-Za-zÀ-ÿ]/.test(ch)){
+        if(seen>=n)break;
+        out+=ch; seen++;
+        if(seen>=n){
+          // include any trailing separator (space/hyphen) after the nth letter
+          let j=i+1;
+          while(j<name.length&&/[\s\-]/.test(name[j])){out+=name[j];j++;}
+          break;
+        }
       } else {
-        right.textContent = "";
+        if(seen>0)out+=ch;
+      }
+    }
+    return out||name[0];
+  }
+
+  // Count how many LETTERS are in the prefix string (used for ghost skip)
+  function letterCount(s){
+    return (s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
+  }
+
+  /* ── String distance ──────────────────────────────────────────────────── */
+  function lev(a,b){
+    const n=a.length,m=b.length;
+    if(!n)return m;if(!m)return n;
+    let prev=Array.from({length:m+1},(_,i)=>i),cur=new Array(m+1);
+    for(let i=1;i<=n;i++){
+      cur[0]=i;
+      for(let j=1;j<=m;j++){const c=a[i-1]===b[j-1]?0:1;cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+c);}
+      [prev,cur]=[cur,prev];
+    }
+    return prev[m];
+  }
+  function jw(s1,s2){
+    if(s1===s2)return 1;
+    const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
+    const md=Math.max(0,Math.floor(Math.max(l1,l2)/2)-1);
+    const m1=new Array(l1).fill(false),m2=new Array(l2).fill(false);
+    let mat=0;
+    for(let i=0;i<l1;i++){const lo=Math.max(0,i-md),hi=Math.min(i+md+1,l2);for(let j=lo;j<hi;j++){if(m2[j]||s1[i]!==s2[j])continue;m1[i]=m2[j]=true;mat++;break;}}
+    if(!mat)return 0;
+    let t=0,k=0;
+    for(let i=0;i<l1;i++){if(!m1[i])continue;while(!m2[k])k++;if(s1[i]!==s2[k])t++;k++;}
+    const jar=(mat/l1+mat/l2+(mat-t/2)/mat)/3;
+    let p=0;for(let i=0;i<Math.min(4,l1,l2);i++){if(s1[i]===s2[i])p++;else break;}
+    return jar+p*0.1*(1-jar);
+  }
+  function findClosest(g){
+    const g0=g[0]||"";let best=null,bs=-Infinity;
+    for(const[key,orig]of BY_KEY){
+      const ss=(g0&&key[0]===g0)?0.18:0;
+      const ml=Math.max(g.length,key.length)||1;
+      const sc=0.50*jw(g,key)+0.40*(1-lev(g,key)/ml)+ss-0.25*Math.min(0.4,Math.abs(g.length-key.length)/20);
+      if(sc>bs){bs=sc;best=orig;}
+    }
+    return best;
+  }
+
+  /* ── Colorize ─────────────────────────────────────────────────────────── */
+  function colorize(guessRaw,target){
+    const g=norm(guessRaw).split("");
+    const t=norm(target).split("");
+    const len=Math.max(g.length,t.length);
+    const counts=new Map();
+    for(const ch of t)counts.set(ch,(counts.get(ch)||0)+1);
+    const mark=new Array(len).fill(null);
+    // greens
+    for(let i=0;i<len;i++){
+      if(i>=g.length){mark[i]="w";continue;}
+      if(i>=t.length){mark[i]="k";continue;}
+      if(g[i]===t[i]){mark[i]="g";counts.set(g[i],counts.get(g[i])-1);}
+    }
+    // yellows/reds
+    for(let i=0;i<len;i++){
+      if(mark[i]!==null)continue;
+      const ch=g[i],c=counts.get(ch)||0;
+      if(c>0){mark[i]="y";counts.set(ch,c-1);}else{mark[i]="r";}
+    }
+    return Array.from({length:len},(_,i)=>({char:mark[i]==="w"?"·":(g[i]??""),cls:mark[i]}));
+  }
+
+  /* ── Score a hint (penalty for wrong guess) ───────────────────────────── */
+  function hintPenalty(hint){
+    let pen=0;
+    for(const{cls}of hint){
+      if(cls==="r")pen+=PEN_RED;
+      else if(cls==="y"||cls==="w"||cls==="k")pen+=PEN_OTHER;
+      // g = no penalty
+    }
+    return pen;
+  }
+
+  /* ── Ghost ────────────────────────────────────────────────────────────── */
+  function setGhost(ghostEl,hint,skipLetters,typed){
+    if(!ghostEl||!hint||!hint.length){if(ghostEl)ghostEl.innerHTML="";return;}
+    const suffix=hint.slice(skipLetters);
+    const spacer=`<span class="gh-typed">${esc(typed)}</span>`;
+    const remain=suffix.slice(typed.length).map(({char,cls})=>`<span class="${cls}">${esc(char)}</span>`).join("");
+    ghostEl.innerHTML=spacer+`<span class="gh-rem">${remain}</span>`;
+  }
+
+  /* ── Live score display ───────────────────────────────────────────────── */
+  function updateLiveScore(delta){
+    $("liveScore").textContent=totalScore;
+    const el=$("liveScore");
+    el.classList.remove("up","down");
+    if(delta>0){el.classList.add("up");setTimeout(()=>el.classList.remove("up"),600);}
+    else if(delta<0){el.classList.add("down");setTimeout(()=>el.classList.remove("down"),600);}
+  }
+
+  /* ── Board ────────────────────────────────────────────────────────────── */
+  const SORTED=[...COUNTRIES].sort((a,b)=>a.localeCompare(b));
+  let inputRefs=new Map(); // country -> {inp, ghostEl, prefix, prefixLetters}
+
+  function renderBoard(){
+    inputRefs.clear();
+    const board=$("board");
+    board.innerHTML="";
+    let firstInp=null,curLetter="",grpEl=null;
+
+    for(const name of SORTED){
+      const letter=name[0].toUpperCase();
+      if(letter!==curLetter){
+        curLetter=letter;
+        grpEl=document.createElement("div");
+        grpEl.className="letter-group";
+        const hdr=document.createElement("div");
+        hdr.className="letter-hdr";
+        hdr.textContent=letter;
+        grpEl.appendChild(hdr);
+        board.appendChild(grpEl);
       }
 
-      row.appendChild(left);
-      row.appendChild(right);
-      board.appendChild(row);
-    }
-  }
+      const isGuessed=guessed.has(name);
+      const row=document.createElement("div");
+      row.className="crow"+(isGuessed?" guessed":"");
 
-  el("guessedCount").textContent = String(guessed.size);
-  el("totalCount").textContent = String(COUNTRIES.length);
-}
+      if(isGuessed){
+        const pfx=document.createElement("span");
+        pfx.className="pfx"; pfx.textContent=name;
+        const b=document.createElement("span");
+        b.className="badge"; b.textContent=`✓ R${guessed.get(name)}`;
+        row.appendChild(pfx); row.appendChild(b);
+      } else {
+        const pfxStr=revealPrefix(name,revealLetters);
+        const pfxLetters=letterCount(pfxStr);
 
-function renderReview(){
-  const review = el("review");
-  review.innerHTML = "";
+        const pfx=document.createElement("span");
+        pfx.className="pfx"; pfx.textContent=pfxStr;
+        row.appendChild(pfx);
 
-  // Correct summary
-  const correctArr = Array.from(roundCorrectSet).sort((a,b)=>a.localeCompare(b));
-  const correctBox = document.createElement("div");
-  correctBox.className = "feedbackItem";
-  correctBox.innerHTML = `
-    <div><b class="good">Correct this round (${correctArr.length})</b></div>
-    <div class="small">${correctArr.length ? escapeHtml(correctArr.join(", ")) : "—"}</div>
-  `;
-  review.appendChild(correctBox);
+        const wrap=document.createElement("div");
+        wrap.className="inp-wrap";
+        const ghostEl=document.createElement("div");
+        ghostEl.className="ghost";
+        wrap.appendChild(ghostEl);
 
-  // Wrong items
-  for (const item of roundWrong){
-    const div = document.createElement("div");
-    div.className = "feedbackItem";
-    div.innerHTML = `
-      <div><b class="bad">Wrong:</b> <span class="cmp">${escapeHtml(norm(item.guess))}</span></div>
-      <div class="small">Closest match: <b>${escapeHtml(item.closest)}</b> (distance ${item.distance})</div>
-      <div class="small" style="margin-top:6px;">
-        <div class="cmp">Your guess: ${item.coloredGuess}</div>
-        <div class="cmp">Target: ${escapeHtml(norm(item.closest))}</div>
-        <div class="small">Green = same letter same place • Yellow = same letter different place • Red = not in word</div>
-      </div>
-    `;
-    review.appendChild(div);
-  }
+        const inp=document.createElement("input");
+        inp.type="text"; inp.className="cinput";
+        inp.autocomplete="off"; inp.autocorrect="off";
+        inp.autocapitalize="off"; inp.spellcheck=false;
 
-  el("roundCorrect").textContent = String(roundCorrectSet.size);
-  el("roundWrong").textContent = String(roundWrong.length);
-}
+        const hint=hintFor.get(name);
+        if(hint) setGhost(ghostEl,hint,pfxLetters,"");
 
-// --- Game flow ---
-function setLocked(isLocked){
-  locked = isLocked;
-  el("guessBox").disabled = isLocked;
-  el("submitBtn").disabled = isLocked;
-}
+        inp.addEventListener("input",()=>{
+          const h=hintFor.get(name);
+          if(h)setGhost(ghostEl,h,pfxLetters,inp.value);
+        });
+        inp.addEventListener("keydown",e=>{
+          if(e.key==="Enter"){e.preventDefault();focusNext(name);}
+        });
 
-function resetRoundStats(){
-  roundCorrectSet = new Set();
-  roundWrong = [];
-  el("msg").textContent = "";
-  el("msg").className = "msg";
-  el("review").innerHTML = "";
-  el("roundCorrect").textContent = "0";
-  el("roundWrong").textContent = "0";
-}
-
-function startGame(){
-  round = 1;
-  revealLetters = 1;
-  guessed = new Map();
-  resetRoundStats();
-
-  el("finalPanel").style.display = "none";
-  el("nextBtn").style.display = "none";
-  el("submitBtn").style.display = "inline-block";
-  el("guessBox").value = "";
-
-  el("roundPill").textContent = `Round ${round} / ${TOTAL_ROUNDS}`;
-  el("revealPill").textContent = String(revealLetters);
-
-  setLocked(false);
-  renderBoard();
-}
-
-function submitRound(){
-  resetRoundStats();
-  const raw = el("guessBox").value || "";
-  const lines = raw.split("\n").map(s=>s.trim()).filter(Boolean);
-
-  // dedupe by normalized string
-  const seen = new Set();
-  const guesses = [];
-  for (const l of lines){
-    const n = norm(l);
-    if (!n) continue;
-    if (seen.has(n)) continue;
-    seen.add(n);
-    guesses.push(l);
-  }
-
-  for (const guessRaw of guesses){
-    const k = norm(guessRaw);
-    const matched = COUNTRY_BY_KEY.get(k);
-
-    if (matched && !guessed.has(matched)){
-      guessed.set(matched, round);
-      roundCorrectSet.add(matched);
-    } else {
-      // wrong OR already guessed
-      if (matched && guessed.has(matched)){
-        // already guessed earlier — treat as neutral (ignore)
-        continue;
+        wrap.appendChild(inp); row.appendChild(wrap);
+        inputRefs.set(name,{inp,ghostEl,prefix:pfxStr,prefixLetters:pfxLetters});
+        if(!firstInp)firstInp=inp;
       }
-      const closest = findClosestCountry(k);
-      const colored = colorCompare(guessRaw, closest.country);
-      roundWrong.push({
-        guess: guessRaw,
-        closest: closest.country,
-        distance: closest.distance,
-        coloredGuess: colored.coloredGuess
-      });
+      grpEl.appendChild(row);
+    }
+
+    $("guessedCount").textContent=guessed.size;
+    $("totalCount").textContent=COUNTRIES.length;
+    if(firstInp)firstInp.focus();
+  }
+
+  function focusNext(cur){
+    const idx=SORTED.indexOf(cur);
+    for(let i=idx+1;i<SORTED.length;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
+    for(let i=0;i<idx;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
+  }
+
+  /* ── Dots ─────────────────────────────────────────────────────────────── */
+  function renderDots(){
+    const c=$("roundDots");c.innerHTML="";
+    for(let i=1;i<=TOTAL_ROUNDS;i++){
+      const d=document.createElement("div");
+      d.className="round-dot"+(i<round?" done":i===round?" active":"");
+      c.appendChild(d);
     }
   }
 
-  // lock and show review
-  setLocked(true);
-  renderBoard();
-  renderReview();
-
-  // messaging + next button
-  if (round < TOTAL_ROUNDS){
-    el("msg").textContent = "Round submitted. Review results, then continue.";
-    el("msg").className = "msg";
-    el("nextBtn").style.display = "inline-block";
-  } else {
-    el("msg").textContent = "Final round submitted. Scoring…";
-    el("msg").className = "msg";
-    showFinalScore();
+  /* ── Game flow ────────────────────────────────────────────────────────── */
+  function startGame(){
+    round=1;revealLetters=1;totalScore=0;
+    guessed=new Map();hintFor=new Map();
+    $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
+    $("errBanner").style.display="none";
+    $("roundModal").classList.remove("open");
+    $("finalModal").classList.remove("open");
+    $("submitBtn").style.display="inline-block";$("submitBtn").disabled=false;
+    $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
+    $("revealPill").textContent=revealLetters;
+    $("liveScore").textContent="0";
+    renderDots();renderBoard();
   }
-}
 
-function nextRound(){
-  if (round >= TOTAL_ROUNDS) return;
-  round += 1;
-  revealLetters = round; // 1..4 letters
-  el("roundPill").textContent = `Round ${round} / ${TOTAL_ROUNDS}`;
-  el("revealPill").textContent = String(revealLetters);
+  function submitRound(){
+    try{
+      // 1. Collect submissions: prefix + what user typed in each row
+      const subs=[];
+      for(const[,ref]of inputRefs){
+        const suffix=ref.inp.value.trim();
+        if(suffix)subs.push(ref.prefix+suffix);
+      }
 
-  el("guessBox").value = "";
-  resetRoundStats();
-  setLocked(false);
-  renderBoard();
+      // 2. Deduplicate
+      const seen=new Set(),unique=[];
+      for(const raw of subs){const k=norm(raw);if(k&&!seen.has(k)){seen.add(k);unique.push(raw);}}
 
-  if (round === TOTAL_ROUNDS){
-    el("nextBtn").style.display = "none";
-  }
-}
+      // 3. Score this round
+      let roundDelta=0,correctCount=0,wrongCount=0;
+      let penRedTotal=0,penOtherTotal=0;
+      const newHints=new Map();
+      for(const[c,h]of hintFor)newHints.set(c,h);
 
-function showFinalScore(){
-  // Score rules:
-  // +5 (R1), +3 (R2), +1 (R3), +0 (R4), -5 missed
-  const pts = {1:5,2:3,3:1,4:0};
-  let score = 0;
-  let c1=0,c2=0,c3=0,c4=0,missed=0;
+      for(const raw of unique){
+        const k=norm(raw);
+        const exact=BY_KEY.get(k);
+        if(exact&&!guessed.has(exact)){
+          guessed.set(exact,round);
+          roundDelta+=ROUND_PTS[round]??0;
+          correctCount++;
+          newHints.delete(exact);
+        } else if(exact&&guessed.has(exact)){
+          // already guessed, ignore
+        } else {
+          // wrong guess
+          const closest=findClosest(k);
+          const hint=colorize(raw,closest);
+          newHints.set(closest,hint);
+          const pen=hintPenalty(hint);
+          roundDelta-=pen;
+          for(const{cls}of hint){
+            if(cls==="r")penRedTotal++;
+            else if(cls==="y"||cls==="w"||cls==="k")penOtherTotal++;
+          }
+          wrongCount++;
+        }
+      }
 
-  for (const c of COUNTRIES){
-    if (guessed.has(c)){
-      const r = guessed.get(c);
-      score += pts[r] ?? 0;
-      if (r===1) c1++; else if (r===2) c2++; else if (r===3) c3++; else if (r===4) c4++;
-    } else {
-      score -= 5;
-      missed++;
+      hintFor=newHints;
+      totalScore+=roundDelta;
+      if(totalScore<-9999)totalScore=-9999; // floor
+
+      updateLiveScore(roundDelta);
+      $("roundCorrect").textContent=correctCount;
+      $("roundWrong").textContent=wrongCount;
+
+      renderBoard();
+
+      // 4. Count blanks
+      const blankCount=Math.max(0,COUNTRIES.length-guessed.size-wrongCount);
+
+      if(round<TOTAL_ROUNDS){
+        showRoundModal(correctCount,wrongCount,blankCount,roundDelta,penRedTotal,penOtherTotal);
+        $("submitBtn").disabled=true;
+      } else {
+        // Apply missed penalty
+        const missedCount=COUNTRIES.length-guessed.size;
+        totalScore-=missedCount*PEN_MISSED;
+        updateLiveScore(-missedCount*PEN_MISSED);
+        showFinalModal(correctCount,wrongCount,blankCount,roundDelta);
+      }
+    }catch(e){
+      $("errBanner").style.display="block";
+      $("errBanner").textContent="Error: "+(e?.message||e);
+      console.error(e);
     }
   }
 
-  el("finalScore").textContent = String(score);
-  el("c1").textContent = String(c1);
-  el("c2").textContent = String(c2);
-  el("c3").textContent = String(c3);
-  el("c4").textContent = String(c4);
-  el("missed").textContent = String(missed);
+  function showRoundModal(correctCount,wrongCount,blankCount,delta,penRed,penOther){
+    $("mRoundLabel").textContent=`Round ${round} / ${TOTAL_ROUNDS}`;
+    $("mCorrect").textContent=correctCount;
+    $("mWrong").textContent=wrongCount;
+    $("mBlank").textContent=blankCount;
+    $("mSub").innerHTML=`<b>${guessed.size}</b> guessed total &nbsp;·&nbsp; <b>${COUNTRIES.length-guessed.size}</b> remaining`;
 
-  // Share card (copy/paste friendly)
-  // You can make this fancier (emoji bars etc.)
-  const date = new Date().toISOString().slice(0,10);
-  const share =
-`GRIND — Country Recall
-Date: ${date}
-Score: ${score}
+    const deltaEl=$("ptsDelta");
+    deltaEl.classList.remove("show","pos","neg");
+    deltaEl.textContent=(delta>=0?"+":"")+delta;
+    deltaEl.classList.add(delta>=0?"pos":"neg");
+    setTimeout(()=>deltaEl.classList.add("show"),30);
 
-R1: ${c1}  (+5)
-R2: ${c2}  (+3)
-R3: ${c3}  (+1)
-R4: ${c4}  (+0)
-Missed: ${missed} (-5)
+    // Breakdown text
+    const parts=[];
+    if(correctCount>0)parts.push(`+${correctCount*( ROUND_PTS[round]??0)} correct`);
+    if(penRed>0)parts.push(`−${penRed*PEN_RED} red letters`);
+    if(penOther>0)parts.push(`−${penOther*PEN_OTHER} other misses`);
+    $("ptsBreakdown").textContent=parts.join(" · ")||"No submissions";
 
-Total guessed: ${guessed.size} / ${COUNTRIES.length}
-`;
-  el("shareCard").textContent = share;
-  el("finalPanel").style.display = "block";
-
-  el("submitBtn").style.display = "none";
-  el("nextBtn").style.display = "none";
-}
-
-async function copyShareCard(){
-  const text = el("shareCard").textContent;
-  try{
-    await navigator.clipboard.writeText(text);
-    el("msg").textContent = "Copied share card to clipboard ✅";
-    el("msg").className = "msg good";
-  }catch{
-    el("msg").textContent = "Couldn’t auto-copy (browser blocked). You can manually select + copy the share card.";
-    el("msg").className = "msg bad";
+    $("roundModal").classList.add("open");
   }
-}
 
-// --- Wire up ---
-el("submitBtn").addEventListener("click", submitRound);
-el("nextBtn").addEventListener("click", nextRound);
-el("restartBtn").addEventListener("click", startGame);
-el("copyBtn").addEventListener("click", copyShareCard);
+  function closeRoundModal(){
+    $("roundModal").classList.remove("open");
+    advanceRound();
+  }
 
-// Start
-startGame();
+  function advanceRound(){
+    try{
+      if(round>=TOTAL_ROUNDS)return;
+      round++;revealLetters=round;
+      $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
+      $("revealPill").textContent=revealLetters;
+      $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
+      $("submitBtn").disabled=false;
+      renderDots();renderBoard();
+    }catch(e){
+      $("errBanner").style.display="block";
+      $("errBanner").textContent="Error: "+(e?.message||e);
+      console.error(e);
+    }
+  }
+
+  function showFinalModal(){
+    const pts={1:5,2:3,3:1,4:0};
+    let c1=0,c2=0,c3=0,c4=0,missed=0;
+    for(const c of COUNTRIES){
+      if(guessed.has(c)){const r=guessed.get(c);if(r===1)c1++;else if(r===2)c2++;else if(r===3)c3++;else c4++;}
+      else missed++;
+    }
+    const maxPossible=COUNTRIES.length*ROUND_PTS[1]-0; // if all R1
+    $("finalScoreNum").textContent=totalScore;
+    $("finalPct").textContent=`${guessed.size} / ${COUNTRIES.length} countries found`;
+    $("f1").textContent=c1;$("f2").textContent=c2;$("f3").textContent=c3;$("f4").textContent=c4;$("fMissed").textContent=missed;
+
+    const date=new Date().toISOString().slice(0,10);
+    $("shareCard").textContent=
+`LANDLE 🌍  ${date}
+━━━━━━━━━━━━━━━━━━━━
+🟩 R1 (+5): ${c1}
+🟦 R2 (+3): ${c2}
+🟨 R3 (+1): ${c3}
+⬛ R4 (+0): ${c4}
+❌ Missed (−3): ${missed}
+━━━━━━━━━━━━━━━━━━━━
+SCORE: ${totalScore}
+${guessed.size}/${COUNTRIES.length} countries
+Play LANDLE!`;
+
+    $("submitBtn").style.display="none";
+    $("finalModal").classList.add("open");
+  }
+
+  async function copyShareCard(){
+    try{
+      await navigator.clipboard.writeText($("shareCard").textContent);
+      $("copyBtn").textContent="✅ Copied!";
+      setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",2000);
+    }catch{
+      $("copyBtn").textContent="Select text above to copy";
+      setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",3000);
+    }
+  }
+
+  $("submitBtn").addEventListener("click",submitRound);
+  $("restartBtn").addEventListener("click",startGame);
+  $("finalRestartBtn").addEventListener("click",startGame);
+  $("copyBtn").addEventListener("click",copyShareCard);
+  $("roundModalClose").addEventListener("click",closeRoundModal);
+  $("roundModal").addEventListener("click",e=>{if(e.target===$("roundModal"))closeRoundModal();});
+
+  startGame();
+})();
 </script>
 </body>
 </html>

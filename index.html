@@ -1,208 +1,378 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>LANDLE 🌍</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#080e1a;--surface:rgba(255,255,255,0.055);--border:rgba(255,255,255,0.10);
-      --text:#ddeeff;--muted:rgba(221,238,255,0.45);
-      --green:#4fffb0;--yellow:#ffe76a;--red:#ff6b6b;--accent:#5b8fff;
-      font-family:'Syne',system-ui,sans-serif;
-    }
-    *,*::before,*::after{box-sizing:border-box;}
-    body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;}
-    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-      background-image:linear-gradient(rgba(91,143,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(91,143,255,0.04) 1px,transparent 1px);
-      background-size:40px 40px;}
-    .wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px;display:grid;gap:16px;grid-template-columns:1.6fr 1fr;}
-    @media(max-width:900px){.wrap{grid-template-columns:1fr;}}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LANDLE 🌍</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080e1a;--surface:rgba(255,255,255,0.055);--border:rgba(255,255,255,0.10);
+  --text:#ddeeff;--muted:rgba(221,238,255,0.45);
+  --green:#4fffb0;--yellow:#ffe76a;--red:#ff6b6b;--accent:#5b8fff;
+  font-family:'Syne',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(91,143,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(91,143,255,0.04) 1px,transparent 1px);
+  background-size:40px 40px;}
 
-    header{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 24px;border-radius:16px;background:var(--surface);border:1px solid var(--border);}
-    header h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .tagline{margin:0;font-size:12px;color:var(--muted);}
-    .header-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .score-live{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);}
-    .score-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--accent);transition:color 0.4s;min-width:52px;text-align:right;}
-    .score-num.up{color:var(--green);}.score-num.down{color:var(--red);}
-    .score-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;z-index:1;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.screen.active{opacity:1;pointer-events:all;position:relative;}
 
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;}
-    h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;}
-    .pill{padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,0.25);font-size:12px;font-family:'DM Mono',monospace;white-space:nowrap;}
-    .pill b{color:var(--accent);}
-    .stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+/* ── MENU SCREEN ── */
+.menu-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;z-index:1;}
+.menu-logo{font-size:52px;font-weight:800;letter-spacing:-2px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+.menu-sub{font-size:14px;color:var(--muted);margin-bottom:48px;text-align:center;}
+.menu-btns{display:flex;flex-direction:column;gap:14px;width:100%;max-width:300px;}
+.menu-btn{padding:18px 28px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:16px;font-family:'Syne',sans-serif;font-weight:800;letter-spacing:0.5px;transition:all 0.18s;display:flex;align-items:center;gap:14px;}
+.menu-btn:hover{background:rgba(255,255,255,0.1);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.menu-btn.play{background:linear-gradient(135deg,rgba(91,143,255,0.25),rgba(79,255,176,0.15));border-color:rgba(91,143,255,0.4);}
+.menu-btn .btn-icon{font-size:24px;width:36px;text-align:center;}
+.menu-btn .btn-text{display:flex;flex-direction:column;align-items:flex-start;}
+.menu-btn .btn-title{font-size:16px;font-weight:800;}
+.menu-btn .btn-hint{font-size:11px;color:var(--muted);font-weight:400;margin-top:2px;}
+.menu-version{position:absolute;bottom:20px;font-size:11px;color:var(--muted);opacity:0.5;}
 
-    /* ── Board ── */
-    .board-scroll{max-height:72vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;}
-    .letter-group{margin-bottom:2px;}
-    .letter-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:6px 6px 3px;margin-bottom:2px;border-bottom:1px solid rgba(255,255,255,0.06);}
-    .crow{display:flex;align-items:center;padding:2px 4px;border-radius:8px;transition:background 0.15s;min-height:26px;position:relative;}
-    .crow:focus-within:not(.guessed){background:rgba(91,143,255,0.08);}
-    .crow.guessed{background:rgba(79,255,176,0.07);}
-    .crow.missed{background:rgba(255,107,107,0.04);}
-    /* Spotlight highlight during animation */
-    .crow.animating{background:rgba(91,143,255,0.15);box-shadow:0 0 0 1px rgba(91,143,255,0.3);}
+/* ── PLAY SELECT SCREEN ── */
+.select-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;z-index:1;}
+.select-back{position:absolute;top:24px;left:24px;background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px;border-radius:8px;transition:color 0.15s;}
+.select-back:hover{color:var(--text);}
+.select-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
+.select-heading{font-size:28px;font-weight:800;margin-bottom:36px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mode-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;width:100%;max-width:860px;}
+.mode-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px;}
+.mode-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.4);}
+.mode-card.locked{opacity:0.55;cursor:default;}
+.mode-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.2s;border-radius:20px;}
+.mode-card.grind::before{background:linear-gradient(135deg,rgba(91,143,255,0.12),rgba(79,255,176,0.06));}
+.mode-card.letter::before{background:linear-gradient(135deg,rgba(255,231,106,0.1),rgba(255,107,107,0.06));}
+.mode-card.continent::before{background:linear-gradient(135deg,rgba(79,255,176,0.1),rgba(91,143,255,0.06));}
+.mode-card:hover::before{opacity:1;}
+.mode-icon{font-size:32px;line-height:1;}
+.mode-name{font-size:18px;font-weight:800;letter-spacing:-0.3px;}
+.mode-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+.mode-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;width:fit-content;margin-top:4px;}
+.mode-badge.daily{background:rgba(255,231,106,0.15);color:var(--yellow);border:1px solid rgba(255,231,106,0.3);}
+.mode-badge.free{background:rgba(91,143,255,0.15);color:#a8c4ff;border:1px solid rgba(91,143,255,0.3);}
+.mode-badge.played{background:rgba(79,255,176,0.15);color:var(--green);border:1px solid rgba(79,255,176,0.3);}
+.mode-daily-info{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
 
-    .pfx{font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;color:var(--text);flex-shrink:0;user-select:none;white-space:pre;}
-    .inp-wrap{flex:1;min-width:0;position:relative;height:20px;}
-    .cinput{position:absolute;inset:0;width:100%;padding:0;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;color:var(--text);caret-color:var(--accent);z-index:2;}
-    .cinput:disabled{cursor:default;}
-    .ghost{position:absolute;inset:0;display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;pointer-events:none;white-space:pre;overflow:hidden;z-index:1;}
-    .gh-typed{visibility:hidden;}
-    .gh-rem span{padding:0 1px;border-radius:3px;}
-    .gh-rem .g{background:rgba(79,255,176,0.28);border:1px solid rgba(79,255,176,0.5);}
-    .gh-rem .y{background:rgba(255,231,106,0.28);border:1px solid rgba(255,231,106,0.5);}
-    .gh-rem .r{background:rgba(255,107,107,0.28);border:1px solid rgba(255,107,107,0.5);}
-    .gh-rem .w{background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.35);color:rgba(221,238,255,0.5);}
-    .gh-rem .k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
-    .badge{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;padding-left:6px;white-space:nowrap;}
-    .guessed .badge{color:var(--green);}
-    .missed .badge{color:var(--red);}
+/* ── GAME SCREEN ── */
+.game-wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px;display:grid;gap:16px;grid-template-columns:1.6fr 1fr;}
+@media(max-width:900px){.game-wrap{grid-template-columns:1fr;}}
+.game-header{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 20px;border-radius:16px;background:var(--surface);border:1px solid var(--border);}
+.game-header h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;}
+.mode-tag{padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;}
+.mode-tag.grind{background:rgba(91,143,255,0.2);color:#a8c4ff;border:1px solid rgba(91,143,255,0.35);}
+.mode-tag.letter{background:rgba(255,231,106,0.2);color:var(--yellow);border:1px solid rgba(255,231,106,0.35);}
+.mode-tag.continent{background:rgba(79,255,176,0.2);color:var(--green);border:1px solid rgba(79,255,176,0.35);}
+.header-right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.score-live{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);}
+.score-num{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--accent);transition:color 0.4s;min-width:52px;text-align:right;}
+.score-num.up{color:var(--green);}.score-num.down{color:var(--red);}
+.score-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;}
+h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;}
+.pill{padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,0.25);font-size:12px;font-family:'DM Mono',monospace;white-space:nowrap;}
+.pill b{color:var(--accent);}
+.stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.board-scroll{max-height:72vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;}
+.letter-group{margin-bottom:2px;}
+.letter-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:6px 6px 3px;margin-bottom:2px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.crow{display:flex;align-items:center;padding:2px 4px;border-radius:8px;transition:background 0.15s;min-height:26px;position:relative;}
+.crow:focus-within:not(.guessed){background:rgba(91,143,255,0.08);}
+.crow.guessed{background:rgba(79,255,176,0.07);}
+.crow.missed{background:rgba(255,107,107,0.04);}
+.crow.animating{background:rgba(91,143,255,0.15);box-shadow:0 0 0 1px rgba(91,143,255,0.3);}
+.pfx{font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;color:var(--text);flex-shrink:0;user-select:none;white-space:pre;}
+.inp-wrap{flex:1;min-width:0;position:relative;height:20px;}
+.cinput{position:absolute;inset:0;width:100%;padding:0;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;color:var(--text);caret-color:var(--accent);z-index:2;}
+.ghost{position:absolute;inset:0;display:flex;align-items:center;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:0.3px;pointer-events:none;white-space:pre;overflow:hidden;z-index:1;}
+.gh-typed{visibility:hidden;}
+.gh-rem span{padding:0 1px;border-radius:3px;}
+.gh-rem .g{background:rgba(79,255,176,0.28);border:1px solid rgba(79,255,176,0.5);}
+.gh-rem .y{background:rgba(255,231,106,0.28);border:1px solid rgba(255,231,106,0.5);}
+.gh-rem .r{background:rgba(255,107,107,0.28);border:1px solid rgba(255,107,107,0.5);}
+.gh-rem .w{background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.35);color:rgba(221,238,255,0.5);}
+.gh-rem .k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
+.badge{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;padding-left:6px;white-space:nowrap;}
+.guessed .badge{color:var(--green);}.missed .badge{color:var(--red);}
+.crow.missed .pfx{color:rgba(221,238,255,0.55);}
+.reveal-tiles{display:flex;gap:2px;align-items:center;flex-wrap:wrap;}
+.rtile{display:inline-flex;align-items:center;justify-content:center;min-width:14px;height:18px;padding:0 2px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;border-radius:3px;border:1px solid transparent;background:rgba(255,255,255,0.08);transform:rotateX(90deg) scale(0.8);transition:transform 0.18s ease,background 0.18s,border-color 0.18s;}
+.rtile.flipped{transform:rotateX(0deg) scale(1);}
+.rtile.g{background:rgba(79,255,176,0.32);border-color:rgba(79,255,176,0.6);color:var(--text);}
+.rtile.y{background:rgba(255,231,106,0.32);border-color:rgba(255,231,106,0.6);color:var(--text);}
+.rtile.r{background:rgba(255,107,107,0.32);border-color:rgba(255,107,107,0.6);color:var(--text);}
+.rtile.w{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.35);color:rgba(221,238,255,0.5);}
+.rtile.k{background:rgba(40,40,60,0.6);border-color:rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
+.score-float{position:fixed;font-family:'DM Mono',monospace;font-size:15px;font-weight:800;pointer-events:none;z-index:300;opacity:1;}
+.hist-btn{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);color:var(--muted);font-size:9px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;padding:0;transition:background 0.15s;position:relative;font-family:'Syne',sans-serif;}
+.hist-btn:hover{background:rgba(255,255,255,0.15);}
+.hist-tip{display:none;position:absolute;right:0;top:20px;z-index:50;background:#0f1a2e;border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:8px 10px;min-width:180px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.6);font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap;}
+.hist-btn:hover .hist-tip,.hist-btn:focus .hist-tip{display:block;}
+.hist-tip .ht-row{display:flex;gap:2px;align-items:center;padding:2px 0;}
+.hist-tip .ht-ch{padding:1px 3px;border-radius:3px;font-size:11px;}
+.hist-tip .ht-ch.g{background:rgba(79,255,176,0.3);border:1px solid rgba(79,255,176,0.6);}
+.hist-tip .ht-ch.y{background:rgba(255,231,106,0.3);border:1px solid rgba(255,231,106,0.6);}
+.hist-tip .ht-ch.r{background:rgba(255,107,107,0.3);border:1px solid rgba(255,107,107,0.6);}
+.hist-tip .ht-ch.w{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);color:rgba(221,238,255,0.5);}
+.hist-tip .ht-ch.k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.5);color:rgba(221,238,255,0.4);}
+.hist-tip-hdr{font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a0a0a;border:1px solid rgba(255,107,107,0.5);color:#ffb3b3;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+button{padding:9px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.08);color:var(--text);cursor:pointer;font-size:13px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;letter-spacing:0.3px;}
+button:hover:not(:disabled){background:rgba(255,255,255,0.15);}
+button:disabled{opacity:0.35;cursor:not-allowed;}
+button.primary{background:rgba(91,143,255,0.22);border-color:rgba(91,143,255,0.45);color:#a8c4ff;}
+button.primary:hover:not(:disabled){background:rgba(91,143,255,0.35);}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.err-banner{padding:10px 12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(255,107,107,0.3);background:rgba(255,80,80,0.1);color:#ffd0d0;font-size:13px;display:none;}
+.round-progress{display:flex;gap:5px;align-items:center;}
+.round-dot{width:9px;height:9px;border-radius:999px;background:var(--border);transition:background 0.3s;}
+.round-dot.active{background:var(--accent);}.round-dot.done{background:var(--green);}
+.legend{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.ls{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:3px;vertical-align:middle;}
+.lg{background:rgba(79,255,176,0.5);}.ly{background:rgba(255,231,106,0.5);}
+.lr{background:rgba(255,107,107,0.5);}.lw{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);}
+.lk{background:rgba(40,40,60,0.8);border:1px solid rgba(120,120,160,0.5);}
+.modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(8,14,26,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.22s;}
+.modal-backdrop.open{opacity:1;pointer-events:all;}
+.modal{background:#0f1a2e;border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px 36px;min-width:300px;max-width:480px;width:92%;text-align:center;transform:translateY(14px) scale(0.97);transition:transform 0.22s;box-shadow:0 28px 70px rgba(0,0,0,0.7);}
+.modal-backdrop.open .modal{transform:translateY(0) scale(1);}
+.modal-title{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);}
+.modal-heading{font-size:22px;font-weight:800;margin-bottom:20px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;}
+.mstat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:14px 8px;}
+.mstat .num{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;}
+.mstat .lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.mstat.mc .num{color:var(--green);}.mstat.mw .num{color:var(--red);}.mstat.mb .num{color:var(--muted);}
+.pts-delta{font-size:36px;font-weight:800;margin:6px 0 4px;font-family:'DM Mono',monospace;opacity:0;transform:scale(0.6);transition:opacity 0.35s,transform 0.35s;}
+.pts-delta.show{opacity:1;transform:scale(1);}.pts-delta.pos{color:var(--green);}.pts-delta.neg{color:var(--red);}
+.pts-breakdown{font-size:12px;color:var(--muted);margin-bottom:16px;min-height:18px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}.modal-sub b{color:var(--text);}
+.modal-close{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(91,143,255,0.4);cursor:pointer;background:linear-gradient(135deg,rgba(91,143,255,0.3),rgba(79,255,176,0.2));color:var(--text);font-size:15px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;}
+.modal-close:hover{background:linear-gradient(135deg,rgba(91,143,255,0.45),rgba(79,255,176,0.3));}
+.final-score-num{font-size:56px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin:8px 0 4px;color:var(--accent);}
+.final-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;}
+.final-stat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;text-align:left;}
+.final-stat .fs-num{font-size:20px;font-weight:800;font-family:'DM Mono',monospace;}
+.final-stat .fs-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+.share-card{white-space:pre;padding:14px;border-radius:12px;margin-top:14px;border:1px solid var(--border);background:rgba(0,0,0,0.3);font-family:'DM Mono',monospace;font-size:12px;line-height:1.7;text-align:left;}
 
-    /* ── Reveal tiles (replace input during animation) ── */
-    .reveal-tiles{display:flex;gap:2px;align-items:center;flex-wrap:wrap;}
-    .rtile{
-      display:inline-flex;align-items:center;justify-content:center;
-      min-width:14px;height:18px;padding:0 2px;
-      font-family:'DM Mono',monospace;font-size:12px;font-weight:700;
-      border-radius:3px;border:1px solid transparent;
-      background:rgba(255,255,255,0.08);
-      transform:rotateX(90deg) scale(0.8);
-      transition:transform 0.18s ease, background 0.18s, border-color 0.18s;
-      transform-origin:center;
-    }
-    .rtile.flipped{transform:rotateX(0deg) scale(1);}
-    .rtile.g{background:rgba(79,255,176,0.32);border-color:rgba(79,255,176,0.6);color:var(--text);}
-    .rtile.y{background:rgba(255,231,106,0.32);border-color:rgba(255,231,106,0.6);color:var(--text);}
-    .rtile.r{background:rgba(255,107,107,0.32);border-color:rgba(255,107,107,0.6);color:var(--text);}
-    .rtile.w{background:rgba(255,255,255,0.10);border-color:rgba(255,255,255,0.35);color:rgba(221,238,255,0.5);}
-    .rtile.k{background:rgba(40,40,60,0.6);border-color:rgba(120,120,160,0.4);color:rgba(221,238,255,0.4);}
+/* ── CONTINENT MAP ── */
+.map-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative;}
+.map-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.map-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+.map-progress{font-size:12px;font-family:'DM Mono',monospace;color:var(--accent);}
+#continentSvg{width:100%;display:block;background:#060d1a;}
+.country-dot{transition:all 0.3s ease;}
+.country-dot.found{filter:drop-shadow(0 0 6px currentColor);}
+@keyframes dotPop{0%{r:3}50%{r:10}100%{r:6}}
+.country-dot.popping{animation:dotPop 0.45s ease;}
+.dot-label{font-family:'DM Mono',monospace;font-size:7px;fill:var(--green);opacity:0;transition:opacity 0.4s;pointer-events:none;text-anchor:middle;}
+.dot-label.show{opacity:1;}
 
-    /* ── Score float ── */
-    .score-float{
-      position:fixed;font-family:'DM Mono',monospace;font-size:15px;font-weight:800;
-      pointer-events:none;z-index:300;opacity:1;
-      transition:opacity 0.7s ease, transform 0.7s ease;
-    }
-    .score-float.gone{opacity:0;transform:translateY(-48px) scale(1.2);}
+/* ── HIGHSCORES SCREEN ── */
+.hs-wrap{min-height:100vh;padding:24px 20px;position:relative;z-index:1;max-width:900px;margin:0 auto;}
+.hs-header{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.hs-back{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px;border-radius:8px;transition:color 0.15s;}
+.hs-back:hover{color:var(--text);}
+.hs-title{font-size:26px;font-weight:800;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hs-tabs{display:flex;gap:4px;margin-bottom:20px;background:rgba(0,0,0,0.3);border-radius:12px;padding:4px;}
+.hs-tab{flex:1;padding:8px 12px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:1px;}
+.hs-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.hs-panel{display:none;}.hs-panel.active{display:block;}
+.hs-empty{text-align:center;padding:48px;color:var(--muted);font-size:14px;}
+.hs-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;}
+.hs-stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.hs-stat-val{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;color:var(--accent);}
+.hs-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.8px;}
+.hs-graph{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:24px;}
+.hs-graph-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:12px;}
+#graphSvg{width:100%;height:160px;display:block;overflow:visible;}
+.hs-history{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.hs-history-hdr{padding:12px 16px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);}
+.hs-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.04);font-family:'DM Mono',monospace;font-size:12px;}
+.hs-row:last-child{border-bottom:none;}
+.hs-row-date{color:var(--muted);min-width:80px;}
+.hs-row-mode{min-width:80px;}
+.hs-row-score{color:var(--accent);font-weight:700;margin-left:auto;}
+.hs-row-pct{color:var(--muted);min-width:60px;text-align:right;}
 
-    /* ── History tooltip ── */
-    .hist-btn{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);color:var(--muted);font-size:9px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;padding:0;transition:background 0.15s;position:relative;font-family:'Syne',sans-serif;}
-    .hist-btn:hover{background:rgba(255,255,255,0.15);}
-    .hist-tip{display:none;position:absolute;right:0;top:20px;z-index:50;background:#0f1a2e;border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:8px 10px;min-width:180px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.6);font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap;}
-    .hist-btn:hover .hist-tip,.hist-btn:focus .hist-tip{display:block;}
-    .hist-tip .ht-row{display:flex;gap:2px;align-items:center;padding:2px 0;}
-    .hist-tip .ht-ch{padding:1px 3px;border-radius:3px;font-size:11px;}
-    .hist-tip .ht-ch.g{background:rgba(79,255,176,0.3);border:1px solid rgba(79,255,176,0.6);}
-    .hist-tip .ht-ch.y{background:rgba(255,231,106,0.3);border:1px solid rgba(255,231,106,0.6);}
-    .hist-tip .ht-ch.r{background:rgba(255,107,107,0.3);border:1px solid rgba(255,107,107,0.6);}
-    .hist-tip .ht-ch.w{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.4);color:rgba(221,238,255,0.5);}
-    .hist-tip .ht-ch.k{background:rgba(40,40,60,0.6);border:1px solid rgba(120,120,160,0.5);color:rgba(221,238,255,0.4);}
-    .hist-tip-hdr{font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
-
-    /* ── Toast ── */
-    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a0a0a;border:1px solid rgba(255,107,107,0.5);color:#ffb3b3;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:200;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-    /* ── Buttons / Controls ── */
-    button{padding:9px 16px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,0.08);color:var(--text);cursor:pointer;font-size:13px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;letter-spacing:0.3px;}
-    button:hover:not(:disabled){background:rgba(255,255,255,0.15);}
-    button:disabled{opacity:0.35;cursor:not-allowed;}
-    button.primary{background:rgba(91,143,255,0.22);border-color:rgba(91,143,255,0.45);color:#a8c4ff;}
-    button.primary:hover:not(:disabled){background:rgba(91,143,255,0.35);}
-    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-    .err-banner{padding:10px 12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(255,107,107,0.3);background:rgba(255,80,80,0.1);color:#ffd0d0;font-size:13px;display:none;}
-    .round-progress{display:flex;gap:5px;align-items:center;}
-    .round-dot{width:9px;height:9px;border-radius:999px;background:var(--border);transition:background 0.3s;}
-    .round-dot.active{background:var(--accent);}.round-dot.done{background:var(--green);}
-    .legend{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:12px;flex-wrap:wrap;align-items:center;}
-    .ls{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:3px;vertical-align:middle;}
-    .lg{background:rgba(79,255,176,0.5);}.ly{background:rgba(255,231,106,0.5);}
-    .lr{background:rgba(255,107,107,0.5);}.lw{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);}
-    .lk{background:rgba(40,40,60,0.8);border:1px solid rgba(120,120,160,0.5);}
-
-    /* ── Modals ── */
-    .modal-backdrop{position:fixed;inset:0;z-index:100;background:rgba(8,14,26,0.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.22s;}
-    .modal-backdrop.open{opacity:1;pointer-events:all;}
-    .modal{background:#0f1a2e;border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px 36px;min-width:300px;max-width:480px;width:92%;text-align:center;transform:translateY(14px) scale(0.97);transition:transform 0.22s;box-shadow:0 28px 70px rgba(0,0,0,0.7);}
-    .modal-backdrop.open .modal{transform:translateY(0) scale(1);}
-    .modal-title{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);}
-    .modal-heading{font-size:22px;font-weight:800;margin-bottom:20px;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .mstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;}
-    .mstat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:14px 8px;}
-    .mstat .num{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;}
-    .mstat .lbl{font-size:11px;color:var(--muted);margin-top:4px;}
-    .mstat.mc .num{color:var(--green);}.mstat.mw .num{color:var(--red);}.mstat.mb .num{color:var(--muted);}
-    .pts-delta{font-size:36px;font-weight:800;margin:6px 0 4px;font-family:'DM Mono',monospace;opacity:0;transform:scale(0.6);transition:opacity 0.35s,transform 0.35s;}
-    .pts-delta.show{opacity:1;transform:scale(1);}
-    .pts-delta.pos{color:var(--green);}.pts-delta.neg{color:var(--red);}
-    .pts-breakdown{font-size:12px;color:var(--muted);margin-bottom:16px;min-height:18px;}
-    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
-    .modal-sub b{color:var(--text);}
-    .modal-close{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(91,143,255,0.4);cursor:pointer;background:linear-gradient(135deg,rgba(91,143,255,0.3),rgba(79,255,176,0.2));color:var(--text);font-size:15px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.15s;}
-    .modal-close:hover{background:linear-gradient(135deg,rgba(91,143,255,0.45),rgba(79,255,176,0.3));}
-    .final-score-num{font-size:56px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin:8px 0 4px;color:var(--accent);}
-    .final-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0;}
-    .final-stat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;text-align:left;}
-    .final-stat .fs-num{font-size:20px;font-weight:800;font-family:'DM Mono',monospace;}
-    .final-stat .fs-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
-    .share-card{white-space:pre;padding:14px;border-radius:12px;margin-top:14px;border:1px solid var(--border);background:rgba(0,0,0,0.3);font-family:'DM Mono',monospace;font-size:12px;line-height:1.7;text-align:left;}
-    .crow.missed .pfx{color:rgba(221,238,255,0.55);}
-  </style>
+/* ── ABOUT SCREEN ── */
+.about-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;position:relative;z-index:1;}
+.about-content{max-width:560px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;}
+.about-globe{font-size:56px;line-height:1;animation:spin 12s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.about-title{font-size:32px;font-weight:800;margin:0;background:linear-gradient(135deg,#5b8fff,#4fffb0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.about-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 32px;text-align:left;line-height:1.8;font-size:14px;color:rgba(221,238,255,0.85);}
+.about-card p{margin:0 0 14px;}.about-card p:last-of-type{margin-bottom:18px;}
+.about-card strong{color:var(--text);}
+.about-email{display:inline-block;margin-top:4px;padding:10px 20px;border-radius:12px;background:rgba(91,143,255,0.18);border:1px solid rgba(91,143,255,0.4);color:#a8c4ff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;text-decoration:none;transition:all 0.15s;}
+.about-email:hover{background:rgba(91,143,255,0.32);transform:translateY(-1px);}
+.about-modes{display:flex;flex-direction:column;gap:8px;width:100%;}
+.about-mode-pill{padding:10px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);font-size:13px;font-weight:700;color:var(--muted);}
+.about-footer{font-size:12px;color:var(--muted);opacity:0.6;margin-top:4px;}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>LANDLE 🌍</h1>
-      <p class="tagline">Name every country from memory. 4 rounds, more letters revealed each round.</p>
+<div class="toast" id="toast"></div>
+
+<!-- ════ MENU SCREEN ════ -->
+<div class="screen active" id="screenMenu">
+  <div class="menu-wrap">
+    <div class="menu-logo">LANDLE 🌍</div>
+    <div class="menu-sub">Geography • Memory • Strategy</div>
+    <div class="menu-btns">
+      <button class="menu-btn play" onclick="showScreen('screenPlay')">
+        <span class="btn-icon">🎮</span>
+        <span class="btn-text"><span class="btn-title">Play</span><span class="btn-hint">Choose your challenge</span></span>
+      </button>
+      <button class="menu-btn" onclick="showScreen('screenHighscores');loadHighscores()">
+        <span class="btn-icon">🏆</span>
+        <span class="btn-text"><span class="btn-title">High Scores</span><span class="btn-hint">Your stats &amp; history</span></span>
+      </button>
+      <button class="menu-btn" onclick="showScreen('screenAbout')">
+        <span class="btn-icon">💬</span>
+        <span class="btn-text"><span class="btn-title">About</span><span class="btn-hint">The story behind LANDLE</span></span>
+      </button>
     </div>
-    <div class="header-right">
-      <div class="pill" id="roundPill">Round <b>1</b> / 4</div>
-      <div class="pill">Letters: <b><span id="revealPill">1</span></b></div>
-      <div class="round-progress" id="roundDots"></div>
-      <div class="score-live" id="scoreLiveEl">
-        <div class="score-lbl">Score</div>
-        <div class="score-num" id="liveScore">0</div>
-      </div>
-    </div>
-  </header>
-  <div class="card">
-    <div class="stats-row">
-      <div class="pill">Guessed: <b><span id="guessedCount">0</span></b> / <span id="totalCount">195</span></div>
-      <div class="pill">✅ <b><span id="roundCorrect">0</span></b></div>
-      <div class="pill">❌ <b><span id="roundWrong">0</span></b></div>
-    </div>
-    <div class="board-scroll" id="board"></div>
+    <div class="menu-version">v2.0</div>
   </div>
-  <div class="card">
-    <h2>Controls</h2>
-    <div class="btn-row">
-      <button class="primary" id="submitBtn">Submit Round</button>
-      <button id="restartBtn">↺ Restart</button>
-    </div>
-    <div class="err-banner" id="errBanner"></div>
-    <div class="legend">
-      <b style="color:var(--text)">Hints:</b>
-      <span><span class="ls lg"></span>right place</span>
-      <span><span class="ls ly"></span>wrong place</span>
-      <span><span class="ls lr"></span>not in name</span>
-      <span><span class="ls lw"></span>missing</span>
-      <span><span class="ls lk"></span>extra</span>
-    </div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.7;">
-      <b style="color:var(--text)">Scoring:</b> R1 +5 · R2 +3 · R3 +1 · R4 +0<br>
-      Nonsense guesses: rejected &amp; −1 pt · Unguessed at end: −3 each
+</div>
+
+<!-- ════ PLAY SELECT SCREEN ════ -->
+<div class="screen" id="screenPlay">
+  <div class="select-wrap">
+    <button class="select-back" onclick="showScreen('screenMenu')">← Back</button>
+    <div class="select-title">Choose Mode</div>
+    <div class="select-heading">What are we playing?</div>
+    <div class="mode-cards">
+      <div class="mode-card grind" onclick="launchMode('grind')">
+        <div class="mode-icon">🌍</div>
+        <div class="mode-name">GRIND</div>
+        <div class="mode-desc">All 195 countries. 4 rounds. The ultimate geography challenge — set aside some serious time.</div>
+        <div class="mode-badge free">♾ Free Play</div>
+      </div>
+      <div class="mode-card letter" id="cardLetter" onclick="launchMode('letter')">
+        <div class="mode-icon">🔤</div>
+        <div class="mode-name">LETTER</div>
+        <div class="mode-desc">One letter. One day. Guess every country that starts with today's letter in 4 rounds.</div>
+        <div id="letterBadge" class="mode-badge daily">📅 Daily</div>
+        <div class="mode-daily-info" id="letterInfo"></div>
+      </div>
+      <div class="mode-card continent" id="cardContinent" onclick="launchMode('continent')">
+        <div class="mode-icon">🗺️</div>
+        <div class="mode-name">CONTINENT</div>
+        <div class="mode-desc">One continent. One day. Watch the map light up as you place each country correctly.</div>
+        <div id="continentBadge" class="mode-badge daily">📅 Daily</div>
+        <div class="mode-daily-info" id="continentInfo"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- ════ GAME SCREEN ════ -->
+<div class="screen" id="screenGame">
+  <div class="game-wrap">
+    <div class="game-header">
+      <h1 onclick="goToMenu()">LANDLE 🌍</h1>
+      <div class="mode-tag grind" id="modeTag">GRIND</div>
+      <div class="pill" id="roundPill">Round <b>1</b> / 4</div>
+      <div class="pill">Letters: <b><span id="revealPill">1</span></b></div>
+      <div class="round-progress" id="roundDots"></div>
+      <div class="header-right">
+        <div class="score-live" id="scoreLiveEl">
+          <div class="score-lbl">Score</div>
+          <div class="score-num" id="liveScore">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stats-row">
+        <div class="pill">Guessed: <b><span id="guessedCount">0</span></b> / <span id="totalCount">195</span></div>
+        <div class="pill">✅ <b><span id="roundCorrect">0</span></b></div>
+        <div class="pill">❌ <b><span id="roundWrong">0</span></b></div>
+        <button class="primary" id="submitBtn" style="margin-left:auto;padding:6px 14px;font-size:12px;">Submit Round ↵</button>
+        <button id="backToModesBtn" onclick="goToMenu()" style="padding:6px 12px;font-size:12px;flex-shrink:0;">← Modes</button>
+      </div>
+      <div class="err-banner" id="errBanner"></div>
+      <div class="board-scroll" id="board"></div>
+    </div>
+    <div class="card" id="rightPanel">
+      <h2>Hints &amp; Scoring</h2>
+      <div class="legend">
+        <b style="color:var(--text)">Hints:</b>
+        <span><span class="ls lg"></span>right place</span>
+        <span><span class="ls ly"></span>wrong place</span>
+        <span><span class="ls lr"></span>not in name</span>
+        <span><span class="ls lw"></span>missing</span>
+        <span><span class="ls lk"></span>extra</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7;">
+        <b style="color:var(--text)">Scoring:</b> R1 +5 · R2 +3 · R3 +1 · R4 +0<br>
+        Nonsense: −1 · Unguessed: −3 each
+      </div>
+    </div>
+    <!-- Map panel (continent mode only) -->
+    <div class="card map-card" id="mapPanel" style="display:none;">
+      <div class="map-header">
+        <span class="map-title" id="mapTitle">Continent Map</span>
+        <span class="map-progress" id="mapProgress">0 / 0</span>
+      </div>
+      <svg id="continentSvg" viewBox="0 0 800 450"></svg>
+    </div>
+  </div>
+</div>
 
+<!-- ════ ABOUT SCREEN ════ -->
+<div class="screen" id="screenAbout">
+  <div class="about-wrap">
+    <button class="select-back" onclick="showScreen('screenMenu')">← Back</button>
+    <div class="about-content">
+      <div class="about-globe">🌍</div>
+      <h1 class="about-title">About LANDLE</h1>
+      <div class="about-card">
+        <p>Hey there! My name is <strong>Birkley</strong>, and I'm the creator of this game.</p>
+        <p>I've traveled around the world quite a bit in my twenty years on this planet, but the more I travel, the more I realize just how little I really know about this world we call home. There are so many countries, cultures, and places to explore.</p>
+        <p>In an effort to understand the world a little bit better — and to stop the beatdown at every geography game I play against my one obnoxiously good geowizard friend (shout out to <strong>Marielle!</strong> 👑) — I put this together with plenty of help from <strong>Claude AI</strong>, a truly fantastic coding companion.</p>
+        <p>I hope you enjoy! I'd love to see your highlights and hear your thoughts.</p>
+        <a class="about-email" href="/cdn-cgi/l/email-protection#bbd9d2c9d0d7dec295ddced5fbdcd6dad2d795d8d4d6">📬 <span class="__cf_email__" data-cfemail="3a58534851565f43145c4f547a5d575b535614595557">[email&#160;protected]</span></a>
+      </div>
+      <div class="about-modes">
+        <div class="about-mode-pill">🌍 GRIND — all 195 countries</div>
+        <div class="about-mode-pill">🔤 LETTER — daily letter challenge</div>
+        <div class="about-mode-pill">🗺️ CONTINENT — daily continent + live map</div>
+      </div>
+      <div class="about-footer">Built with ❤️ and Claude AI &nbsp;·&nbsp; v2.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ HIGHSCORES SCREEN ════ -->
+<div class="screen" id="screenHighscores">
+  <div class="hs-wrap">
+    <div class="hs-header">
+      <button class="hs-back" onclick="showScreen('screenMenu')">← Back</button>
+      <div class="hs-title">🏆 High Scores</div>
+    </div>
+    <div class="hs-tabs">
+      <button class="hs-tab active" onclick="switchHsTab('grind',this)">GRIND</button>
+      <button class="hs-tab" onclick="switchHsTab('letter',this)">LETTER</button>
+      <button class="hs-tab" onclick="switchHsTab('continent',this)">CONTINENT</button>
+    </div>
+    <div class="hs-panel active" id="hsPanelGrind"></div>
+    <div class="hs-panel" id="hsPanelLetter"></div>
+    <div class="hs-panel" id="hsPanelContinent"></div>
+  </div>
+</div>
+
+<!-- ════ MODALS (shared) ════ -->
 <div class="modal-backdrop" id="roundModal">
   <div class="modal">
     <p class="modal-title">Round Complete</p>
@@ -218,626 +388,831 @@
     <button class="modal-close" id="roundModalClose">Continue →</button>
   </div>
 </div>
-
 <div class="modal-backdrop" id="finalModal">
   <div class="modal" style="max-height:90vh;overflow-y:auto;">
-    <p class="modal-title">Game Over</p>
+    <p class="modal-title" id="finalModeLabel">GRIND — Game Over</p>
     <div class="modal-heading">Final Score</div>
     <div class="final-score-num" id="finalScoreNum">0</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:12px;" id="finalPct"></div>
     <div class="final-breakdown">
-      <div class="final-stat"><div class="fs-num" style="color:var(--green)" id="f1">0</div><div class="fs-lbl">🟩 R1 (+5 each)</div></div>
-      <div class="final-stat"><div class="fs-num" style="color:#5b8fff" id="f2">0</div><div class="fs-lbl">🟦 R2 (+3 each)</div></div>
-      <div class="final-stat"><div class="fs-num" style="color:var(--yellow)" id="f3">0</div><div class="fs-lbl">🟨 R3 (+1 each)</div></div>
+      <div class="final-stat"><div class="fs-num" style="color:var(--green)" id="f1">0</div><div class="fs-lbl">🟩 R1 (+5)</div></div>
+      <div class="final-stat"><div class="fs-num" style="color:#5b8fff" id="f2">0</div><div class="fs-lbl">🟦 R2 (+3)</div></div>
+      <div class="final-stat"><div class="fs-num" style="color:var(--yellow)" id="f3">0</div><div class="fs-lbl">🟨 R3 (+1)</div></div>
       <div class="final-stat"><div class="fs-num" style="color:var(--muted)" id="f4">0</div><div class="fs-lbl">⬛ R4 (+0)</div></div>
-      <div class="final-stat" style="grid-column:1/-1"><div class="fs-num" style="color:var(--red)" id="fMissed">0</div><div class="fs-lbl">❌ Missed (−3 each)</div></div>
+      <div class="final-stat" style="grid-column:1/-1"><div class="fs-num" style="color:var(--red)" id="fMissed">0</div><div class="fs-lbl">❌ Missed (−3)</div></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
       <button class="modal-close" id="copyBtn" style="flex:1;">📋 Copy Share Card</button>
       <button class="modal-close" id="finalViewBtn" style="flex:1;background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);">👁 View Board</button>
     </div>
-    <button class="modal-close" id="finalRestartBtn" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);">↺ Play Again</button>
+    <button class="modal-close" id="finalMenuBtn" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);margin-bottom:10px;">⌂ Main Menu</button>
     <div class="share-card" id="shareCard"></div>
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (function(){
-  /* ── Data ──────────────────────────────────────────────────────────── */
-  const COUNTRIES=[
-    "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan",
-    "Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi",
-    "Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo","Costa Rica","Côte d'Ivoire","Croatia","Cuba","Cyprus","Czechia",
-    "Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic",
-    "Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia",
-    "Fiji","Finland","France",
-    "Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana",
-    "Haiti","Honduras","Hungary",
-    "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy",
-    "Jamaica","Japan","Jordan",
-    "Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan",
-    "Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg",
-    "Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar",
-    "Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway",
-    "Oman",
-    "Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal",
-    "Qatar",
-    "Romania","Russia","Rwanda",
-    "Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","State of Palestine","Sudan","Suriname","Sweden","Switzerland","Syria",
-    "Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu",
-    "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
-    "Vanuatu","Vatican City","Venezuela","Vietnam",
-    "Yemen","Zambia","Zimbabwe"
-  ];
-  const ALIASES=new Map([
-    ["usa","united states"],["us","united states"],["u s a","united states"],
-    ["uk","united kingdom"],["uae","united arab emirates"],
-    ["cote d ivoire","cote divoire"],["ivory coast","cote divoire"],
-    ["cape verde","cabo verde"],["czech republic","czechia"],
-    ["viet nam","vietnam"],["drc","democratic republic of the congo"],
-    ["dr congo","democratic republic of the congo"],
-    ["republic of the congo","congo"],["palestine","state of palestine"],
-    ["holy see","vatican city"],["burma","myanmar"],["swaziland","eswatini"],
-    ["east timor","timor leste"],["trinidad","trinidad and tobago"],
-    ["tobago","trinidad and tobago"],["macedonia","north macedonia"],
-  ]);
+'use strict';
+/* ═══════════════════════════════════════════════════════════════════
+   DATA: All 195 countries — [name, continent_key, lat, lon]
+═══════════════════════════════════════════════════════════════════ */
+const RAW=[
+["Afghanistan","AS",33.9,67.7],["Albania","EU",41.2,20.2],["Algeria","AF",28.0,1.7],
+["Andorra","EU",42.5,1.5],["Angola","AF",-11.2,17.9],["Antigua and Barbuda","NA",17.1,-61.8],
+["Argentina","SA",-34.6,-63.6],["Armenia","AS",40.1,45.0],["Australia","OC",-25.7,134.6],
+["Austria","EU",47.5,14.6],["Azerbaijan","AS",40.4,47.6],
+["Bahamas","NA",25.0,-77.4],["Bahrain","AS",26.0,50.5],["Bangladesh","AS",23.7,90.4],
+["Barbados","NA",13.2,-59.6],["Belarus","EU",53.7,27.9],["Belgium","EU",50.5,4.5],
+["Belize","NA",17.2,-88.5],["Benin","AF",9.3,2.3],["Bhutan","AS",27.4,90.4],
+["Bolivia","SA",-16.3,-63.6],["Bosnia and Herzegovina","EU",44.2,17.6],["Botswana","AF",-22.3,24.7],
+["Brazil","SA",-10.8,-53.1],["Brunei","AS",4.5,114.7],["Bulgaria","EU",42.7,25.5],
+["Burkina Faso","AF",12.4,-1.6],["Burundi","AF",-3.4,29.9],
+["Cabo Verde","AF",16.0,-24.0],["Cambodia","AS",12.6,104.9],["Cameroon","AF",3.9,11.5],
+["Canada","NA",60.0,-96.8],["Central African Republic","AF",6.6,20.9],["Chad","AF",15.5,18.7],
+["Chile","SA",-31.8,-71.2],["China","AS",35.9,104.2],["Colombia","SA",4.1,-72.4],
+["Comoros","AF",-11.7,43.3],["Congo","AF",-0.2,15.8],["Costa Rica","NA",9.9,-84.2],
+["Côte d'Ivoire","AF",6.8,-5.5],["Croatia","EU",45.1,15.2],["Cuba","NA",21.5,-80.0],
+["Cyprus","AS",35.1,33.4],["Czechia","EU",49.8,15.5],
+["Democratic Republic of the Congo","AF",-4.0,21.8],["Denmark","EU",56.3,9.5],
+["Djibouti","AF",11.8,42.6],["Dominica","NA",15.4,-61.4],["Dominican Republic","NA",18.7,-70.2],
+["Ecuador","SA",-1.8,-78.2],["Egypt","AF",26.8,30.8],["El Salvador","NA",13.8,-88.9],
+["Equatorial Guinea","AF",1.6,10.3],["Eritrea","AF",15.2,39.8],["Estonia","EU",58.6,25.0],
+["Eswatini","AF",-26.5,31.5],["Ethiopia","AF",9.2,40.5],
+["Fiji","OC",-18.0,178.5],["Finland","EU",64.0,26.0],["France","EU",46.2,2.2],
+["Gabon","AF",-0.8,11.6],["Gambia","AF",13.4,-15.3],["Georgia","AS",42.3,43.4],
+["Germany","EU",51.2,10.4],["Ghana","AF",8.0,-1.2],["Greece","EU",39.1,21.8],
+["Grenada","NA",12.1,-61.7],["Guatemala","NA",15.8,-90.2],["Guinea","AF",11.0,-10.9],
+["Guinea-Bissau","AF",11.8,-15.2],["Guyana","SA",4.9,-59.0],
+["Haiti","NA",18.9,-72.7],["Honduras","NA",15.2,-86.2],["Hungary","EU",47.2,19.5],
+["Iceland","EU",65.0,-18.5],["India","AS",21.0,78.0],["Indonesia","AS",-2.5,118.0],
+["Iran","AS",32.4,53.7],["Iraq","AS",33.2,43.7],["Ireland","EU",53.2,-8.2],
+["Israel","AS",31.5,34.8],["Italy","EU",43.0,12.6],
+["Jamaica","NA",18.1,-77.3],["Japan","AS",36.2,138.3],["Jordan","AS",30.6,36.2],
+["Kazakhstan","AS",48.2,68.0],["Kenya","AF",0.0,38.0],["Kiribati","OC",1.9,-157.4],
+["Kuwait","AS",29.3,47.6],["Kyrgyzstan","AS",41.2,74.8],
+["Laos","AS",18.2,103.9],["Latvia","EU",56.9,24.6],["Lebanon","AS",33.9,35.9],
+["Lesotho","AF",-29.6,28.2],["Liberia","AF",6.4,-9.4],["Libya","AF",26.3,17.2],
+["Liechtenstein","EU",47.1,9.6],["Lithuania","EU",55.9,23.9],["Luxembourg","EU",49.8,6.1],
+["Madagascar","AF",-20.3,46.9],["Malawi","AF",-13.3,34.3],["Malaysia","AS",2.5,112.5],
+["Maldives","AS",3.2,73.2],["Mali","AF",17.6,-4.0],["Malta","EU",35.9,14.5],
+["Marshall Islands","OC",7.1,171.2],["Mauritania","AF",20.3,-10.9],["Mauritius","AF",-20.2,57.5],
+["Mexico","NA",23.6,-102.6],["Micronesia","OC",6.9,158.2],["Moldova","EU",47.4,28.4],
+["Monaco","EU",43.7,7.4],["Mongolia","AS",46.9,103.8],["Montenegro","EU",42.7,19.4],
+["Morocco","AF",31.8,-7.1],["Mozambique","AF",-18.7,35.5],["Myanmar","AS",17.1,96.0],
+["Namibia","AF",-22.0,17.1],["Nauru","OC",-0.5,166.9],["Nepal","AS",28.4,84.1],
+["Netherlands","EU",52.1,5.3],["New Zealand","OC",-41.5,172.5],["Nicaragua","NA",12.9,-85.3],
+["Niger","AF",17.6,8.1],["Nigeria","AF",9.1,8.7],["North Korea","AS",40.3,127.5],
+["North Macedonia","EU",41.6,21.7],["Norway","EU",60.5,8.5],
+["Oman","AS",21.5,57.5],
+["Pakistan","AS",30.4,69.3],["Palau","OC",7.5,134.6],["Panama","NA",8.5,-80.8],
+["Papua New Guinea","OC",-6.3,143.9],["Paraguay","SA",-23.4,-58.4],["Peru","SA",-9.2,-75.0],
+["Philippines","AS",12.9,121.8],["Poland","EU",52.1,19.1],["Portugal","EU",39.3,-8.2],
+["Qatar","AS",25.4,51.2],
+["Romania","EU",45.9,24.9],["Russia","EU",61.5,105.3],["Rwanda","AF",-1.9,29.9],
+["Saint Kitts and Nevis","NA",17.3,-62.7],["Saint Lucia","NA",13.9,-60.9],
+["Saint Vincent and the Grenadines","NA",13.3,-61.2],["Samoa","OC",-13.8,-172.5],
+["San Marino","EU",43.9,12.5],["Sao Tome and Principe","AF",0.2,6.6],
+["Saudi Arabia","AS",23.9,45.1],["Senegal","AF",14.5,-14.5],["Serbia","EU",44.0,21.0],
+["Seychelles","AF",-4.7,55.5],["Sierra Leone","AF",8.5,-11.8],["Singapore","AS",1.4,103.8],
+["Slovakia","EU",48.7,19.7],["Slovenia","EU",46.1,14.8],["Solomon Islands","OC",-9.4,160.1],
+["Somalia","AF",5.2,46.2],["South Africa","AF",-30.6,22.9],["South Korea","AS",35.9,127.8],
+["South Sudan","AF",6.9,31.3],["Spain","EU",40.5,-3.7],["Sri Lanka","AS",7.9,80.8],
+["State of Palestine","AS",31.9,35.2],["Sudan","AF",15.6,30.5],["Suriname","SA",3.9,-56.0],
+["Sweden","EU",60.1,18.6],["Switzerland","EU",46.8,8.2],["Syria","AS",34.8,38.8],
+["Tajikistan","AS",38.9,71.3],["Tanzania","AF",-6.4,34.9],["Thailand","AS",15.9,100.9],
+["Timor-Leste","AS",-8.9,125.7],["Togo","AF",8.6,1.2],["Tonga","OC",-20.3,-175.2],
+["Trinidad and Tobago","NA",10.7,-61.2],["Tunisia","AF",34.0,9.0],["Turkey","AS",39.1,35.3],
+["Turkmenistan","AS",40.0,59.6],["Tuvalu","OC",-7.5,179.2],
+["Uganda","AF",1.4,32.3],["Ukraine","EU",48.4,31.2],["United Arab Emirates","AS",23.4,53.8],
+["United Kingdom","EU",54.6,-2.3],["United States","NA",38.0,-97.0],["Uruguay","SA",-32.5,-55.8],
+["Uzbekistan","AS",41.4,64.6],
+["Vanuatu","OC",-15.4,166.9],["Vatican City","EU",41.9,12.5],["Venezuela","SA",6.4,-66.6],
+["Vietnam","AS",14.1,108.3],
+["Yemen","AS",15.6,48.5],["Zambia","AF",-13.1,27.8],["Zimbabwe","AF",-20.0,30.0]
+];
 
-  /* ── Constants ─────────────────────────────────────────────────────── */
-  const TOTAL_ROUNDS=4;
-  const ROUND_PTS={1:5,2:3,3:1,4:0};
-  const PEN_MISSED=3, PEN_NONSENSE=1;
-  const MAX_GUESS_LEN=34;
-  const QUIPS=[
-    "That's quite incoherent, my good sir! (−1)",
-    "What in tarnation are you trying to spell? (−1)",
-    "I'm afraid that's not a country... or a word. (−1)",
-    "My atlas doesn't have that one, chief. (−1)",
-    "Even the flat-earthers don't claim that place. (−1)",
-    "Bold geography, but no. (−1)",
-    "The cartographers are weeping. (−1)",
-    "Is that a country or a sneeze? (−1)",
-  ];
+const COUNTRIES=RAW.map(r=>r[0]);
+const BY_CONTINENT={};
+const COUNTRY_GEO={};
+RAW.forEach(([name,cont,lat,lon])=>{
+  COUNTRY_GEO[name]={cont,lat,lon};
+  if(!BY_CONTINENT[cont])BY_CONTINENT[cont]=[];
+  BY_CONTINENT[cont].push(name);
+});
 
-  /* ── Animation timing (ms) ─────────────────────────────────────────── */
-  // Base values — will be scaled down if there are many entries
-  const BASE_SCROLL  = 180;
-  const BASE_PAUSE   = 60;
-  const BASE_FLIP    = 90;
-  const BASE_AFTER   = 180;
-  const BASE_BETWEEN = 80;
-  const TARGET_MS    = 10000; // aim for full sequence in 10 seconds
+const CONTINENT_META={
+  "AF":{name:"Africa",   emoji:"🌍",color:"#f59e42"},
+  "AS":{name:"Asia",     emoji:"🌏",color:"#5b8fff"},
+  "EU":{name:"Europe",   emoji:"🌍",color:"#a78bfa"},
+  "NA":{name:"North America",emoji:"🌎",color:"#4fffb0"},
+  "SA":{name:"South America",emoji:"🌎",color:"#ffe76a"},
+  "OC":{name:"Oceania",  emoji:"🌏",color:"#fb7185"},
+};
 
-  function calcTimings(queueLen, avgTiles){
-    if(queueLen===0)return{T_SCROLL:BASE_SCROLL,T_PAUSE:BASE_PAUSE,T_FLIP:BASE_FLIP,T_AFTER:BASE_AFTER,T_BETWEEN:BASE_BETWEEN};
-    // Estimate how long the animation takes at base speed per entry
-    const basePerEntry = BASE_SCROLL + BASE_PAUSE + avgTiles*BASE_FLIP + BASE_AFTER + BASE_BETWEEN;
-    const totalBase = basePerEntry * queueLen;
-    const scale = Math.min(1, TARGET_MS / totalBase);
-    return {
-      T_SCROLL:  Math.max(80,  Math.round(BASE_SCROLL  * scale)),
-      T_PAUSE:   Math.max(30,  Math.round(BASE_PAUSE   * scale)),
-      T_FLIP:    Math.max(30,  Math.round(BASE_FLIP    * scale)),
-      T_AFTER:   Math.max(60,  Math.round(BASE_AFTER   * scale)),
-      T_BETWEEN: Math.max(20,  Math.round(BASE_BETWEEN * scale)),
-    };
+/* ═══ ALIASES ═══ */
+const ALIASES=new Map([
+  ["usa","united states"],["us","united states"],["uk","united kingdom"],["uae","united arab emirates"],
+  ["cote d ivoire","cote divoire"],["ivory coast","cote divoire"],["cape verde","cabo verde"],
+  ["czech republic","czechia"],["viet nam","vietnam"],["drc","democratic republic of the congo"],
+  ["dr congo","democratic republic of the congo"],["republic of the congo","congo"],
+  ["palestine","state of palestine"],["holy see","vatican city"],["burma","myanmar"],
+  ["swaziland","eswatini"],["east timor","timor leste"],["trinidad","trinidad and tobago"],
+  ["tobago","trinidad and tobago"],["macedonia","north macedonia"],
+]);
+
+/* ═══ CONSTANTS ═══ */
+const TOTAL_ROUNDS=4,ROUND_PTS={1:5,2:3,3:1,4:0},PEN_MISSED=3,PEN_NONSENSE=1,MAX_GUESS_LEN=34;
+const BASE_SCROLL=180,BASE_PAUSE=60,BASE_FLIP=90,BASE_AFTER=180,BASE_BETWEEN=80,TARGET_MS=10000;
+const QUIPS=[
+  "That's quite incoherent, my good sir! (−1)",
+  "What in tarnation are you trying to spell? (−1)",
+  "I'm afraid that's not a country... or a word. (−1)",
+  "My atlas doesn't have that one, chief. (−1)",
+  "Even the flat-earthers don't claim that place. (−1)",
+  "Bold geography, but no. (−1)","The cartographers are weeping. (−1)",
+  "Is that a country or a sneeze? (−1)",
+];
+
+/* ═══ CURRENT MODE STATE ═══ */
+let currentMode={type:'grind',countries:COUNTRIES,label:'GRIND',tag:'grind',dailyKey:null,continentKey:null};
+let round=1,revealLetters=1,totalScore=0,gameOver=false,animating=false;
+let guessed=new Map(),hintFor=new Map(),historyFor=new Map();
+let SORTED=[];
+
+/* ═══ DAILY SEEDS ═══ */
+const DAY=Math.floor(Date.now()/86400000);
+
+function getDailyLetter(){
+  const letters=[...new Set(COUNTRIES.map(c=>c[0].toUpperCase()))].sort();
+  return letters[DAY%letters.length];
+}
+function getDailyContinent(){
+  const keys=Object.keys(CONTINENT_META);
+  return keys[DAY%keys.length];
+}
+
+/* ═══ UTILS ═══ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function stripDia(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+function norm(s){
+  const t=stripDia(String(s)).toLowerCase().replace(/['']/g,"").replace(/[^a-z\s-]/g," ").replace(/-/g," ").replace(/\s+/g," ").trim();
+  return ALIASES.get(t)??t;
+}
+const BY_KEY=new Map();for(const c of COUNTRIES)BY_KEY.set(norm(c),c);
+function revealPrefix(name,n){
+  let out="",seen=0;
+  for(let i=0;i<name.length;i++){
+    const ch=name[i];
+    if(/[A-Za-zÀ-ÿ]/.test(ch)){
+      if(seen>=n)break;out+=ch;seen++;
+      if(seen>=n){let j=i+1;while(j<name.length&&/[\s-]/.test(name[j])){out+=name[j];j++;}break;}
+    }else{if(seen>0)out+=ch;}
   }
+  return out||name[0];
+}
+function letterCount(s){return(s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;}
 
-  /* ── State ─────────────────────────────────────────────────────────── */
-  let round=1,revealLetters=1,totalScore=0,gameOver=false;
-  let guessed=new Map(), hintFor=new Map(), historyFor=new Map();
-  let animating=false;
-
-  /* ── Utils ─────────────────────────────────────────────────────────── */
-  const $=id=>document.getElementById(id);
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const wait=ms=>new Promise(r=>setTimeout(r,ms));
-  function stripDia(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
-  function norm(s){
-    const t=stripDia(String(s)).toLowerCase().replace(/['']/g,"").replace(/[^a-z\s-]/g," ").replace(/-/g," ").replace(/\s+/g," ").trim();
-    return ALIASES.get(t)??t;
+/* ═══ STRING DISTANCE ═══ */
+function lev(a,b){
+  const n=a.length,m=b.length;if(!n)return m;if(!m)return n;
+  let p=Array.from({length:m+1},(_,i)=>i),c=new Array(m+1);
+  for(let i=1;i<=n;i++){c[0]=i;for(let j=1;j<=m;j++){const x=a[i-1]===b[j-1]?0:1;c[j]=Math.min(c[j-1]+1,p[j]+1,p[j-1]+x);}[p,c]=[c,p];}
+  return p[m];
+}
+function jw(s1,s2){
+  if(s1===s2)return 1;const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
+  const md=Math.max(0,Math.floor(Math.max(l1,l2)/2)-1);
+  const m1=new Array(l1).fill(false),m2=new Array(l2).fill(false);let mat=0;
+  for(let i=0;i<l1;i++){const lo=Math.max(0,i-md),hi=Math.min(i+md+1,l2);for(let j=lo;j<hi;j++){if(m2[j]||s1[i]!==s2[j])continue;m1[i]=m2[j]=true;mat++;break;}}
+  if(!mat)return 0;let t2=0,k=0;
+  for(let i=0;i<l1;i++){if(!m1[i])continue;while(!m2[k])k++;if(s1[i]!==s2[k])t2++;k++;}
+  const jar=(mat/l1+mat/l2+(mat-t2/2)/mat)/3;
+  let p=0;for(let i=0;i<Math.min(4,l1,l2);i++){if(s1[i]===s2[i])p++;else break;}
+  return jar+p*0.1*(1-jar);
+}
+function findClosest(g,prefixN){
+  let best=null,bs=-Infinity;
+  // restrict to mode countries
+  const pool=currentMode.countries;
+  for(const orig of pool){
+    const key=norm(orig);
+    if(prefixN&&!key.startsWith(prefixN))continue;
+    const ml=Math.max(g.length,key.length)||1;
+    const sc=0.55*jw(g,key)+0.35*(1-lev(g,key)/ml);
+    if(sc>bs){bs=sc;best=orig;}
   }
-  const BY_KEY=new Map();
-  for(const c of COUNTRIES)BY_KEY.set(norm(c),c);
+  if(!best){for(const orig of pool){const key=norm(orig);const ml=Math.max(g.length,key.length)||1;const sc=0.55*jw(g,key)+0.35*(1-lev(g,key)/ml);if(sc>bs){bs=sc;best=orig;}}}
+  return best;
+}
+function minLevToAny(g){let b=Infinity;for(const[k]of BY_KEY){const d=lev(g,k);if(d<b)b=d;}return b;}
+function isCoherent(g){if(!g.length||g.length>MAX_GUESS_LEN)return false;return minLevToAny(g)<=Math.ceil(g.length*0.50);}
 
-  /* ── Prefix utils ──────────────────────────────────────────────────── */
-  function revealPrefix(name,n){
-    let out="",seen=0;
-    for(let i=0;i<name.length;i++){
-      const ch=name[i];
-      if(/[A-Za-zÀ-ÿ]/.test(ch)){
-        if(seen>=n)break; out+=ch; seen++;
-        if(seen>=n){let j=i+1;while(j<name.length&&/[\s-]/.test(name[j])){out+=name[j];j++;}break;}
-      }else{if(seen>0)out+=ch;}
-    }
-    return out||name[0];
+/* ═══ COLORIZE ═══ */
+function colorize(guessRaw,target){
+  const g=norm(guessRaw).split(""),t=norm(target).split("");
+  const len=Math.max(g.length,t.length);
+  const counts=new Map();for(const ch of t)counts.set(ch,(counts.get(ch)||0)+1);
+  const mark=new Array(len).fill(null);
+  for(let i=0;i<len;i++){
+    if(i>=g.length){mark[i]="w";continue;}if(i>=t.length){mark[i]="k";continue;}
+    if(g[i]===t[i]){mark[i]="g";counts.set(g[i],counts.get(g[i])-1);}
   }
-  function letterCount(s){return(s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;}
-
-  /* ── String distance ────────────────────────────────────────────────── */
-  function lev(a,b){
-    const n=a.length,m=b.length;if(!n)return m;if(!m)return n;
-    let p=Array.from({length:m+1},(_,i)=>i),c=new Array(m+1);
-    for(let i=1;i<=n;i++){c[0]=i;for(let j=1;j<=m;j++){const x=a[i-1]===b[j-1]?0:1;c[j]=Math.min(c[j-1]+1,p[j]+1,p[j-1]+x);}[p,c]=[c,p];}
-    return p[m];
+  for(let i=0;i<len;i++){
+    if(mark[i]!==null)continue;const ch=g[i],cv=counts.get(ch)||0;
+    if(cv>0){mark[i]="y";counts.set(ch,cv-1);}else{mark[i]="r";}
   }
-  function jw(s1,s2){
-    if(s1===s2)return 1;const l1=s1.length,l2=s2.length;if(!l1||!l2)return 0;
-    const md=Math.max(0,Math.floor(Math.max(l1,l2)/2)-1);
-    const m1=new Array(l1).fill(false),m2=new Array(l2).fill(false);let mat=0;
-    for(let i=0;i<l1;i++){const lo=Math.max(0,i-md),hi=Math.min(i+md+1,l2);for(let j=lo;j<hi;j++){if(m2[j]||s1[i]!==s2[j])continue;m1[i]=m2[j]=true;mat++;break;}}
-    if(!mat)return 0;let t=0,k=0;
-    for(let i=0;i<l1;i++){if(!m1[i])continue;while(!m2[k])k++;if(s1[i]!==s2[k])t++;k++;}
-    const jar=(mat/l1+mat/l2+(mat-t/2)/mat)/3;
-    let p=0;for(let i=0;i<Math.min(4,l1,l2);i++){if(s1[i]===s2[i])p++;else break;}
-    return jar+p*0.1*(1-jar);
+  return Array.from({length:len},(_,i)=>({char:mark[i]==="w"?"·":(g[i]??""),cls:mark[i]}));
+}
+function setGhost(ghostEl,hint,skipLetters,typed){
+  if(!ghostEl||!hint?.length){if(ghostEl)ghostEl.innerHTML="";return;}
+  const suffix=hint.slice(skipLetters);
+  const spacer=`<span class="gh-typed">${esc(typed)}</span>`;
+  const remain=suffix.slice(typed.length).map(({char,cls})=>`<span class="${cls}">${esc(char)}</span>`).join("");
+  ghostEl.innerHTML=spacer+`<span class="gh-rem">${remain}</span>`;
+}
+
+/* ═══ TOAST ═══ */
+let toastTimer=null;
+function showToast(msg){
+  const t=$("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);
+}
+
+/* ═══ LIVE SCORE ═══ */
+function updateLiveScore(delta){
+  $("liveScore").textContent=totalScore;
+  const el=$("liveScore");el.classList.remove("up","down");
+  if(delta>0){el.classList.add("up");setTimeout(()=>el.classList.remove("up"),700);}
+  else if(delta<0){el.classList.add("down");setTimeout(()=>el.classList.remove("down"),700);}
+}
+
+/* ═══ SCORE FLOAT ═══ */
+function floatScore(pts,anchorEl){
+  const scoreRect=$("scoreLiveEl").getBoundingClientRect();
+  const anchorRect=anchorEl.getBoundingClientRect();
+  const el=document.createElement("div");
+  el.className="score-float";el.textContent=(pts>0?"+":"")+pts;
+  el.style.color=pts>0?"var(--green)":"var(--red)";
+  el.style.left=(anchorRect.left+anchorRect.width/2-16)+"px";
+  el.style.top=(anchorRect.top-4)+"px";
+  el.style.fontSize="15px";el.style.fontWeight="800";el.style.pointerEvents="none";el.style.zIndex="9999";
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+    el.style.transition="opacity 0.65s ease,left 0.65s ease,top 0.65s ease,transform 0.65s ease";
+    el.style.opacity="0";
+    el.style.left=(scoreRect.left+scoreRect.width/2-16)+"px";
+    el.style.top=(scoreRect.top-10)+"px";
+    el.style.transform="scale(1.3)";
+    setTimeout(()=>{el.remove();updateLiveScore(pts);},680);
+  });});
+}
+
+/* ═══ ADAPTIVE TIMING ═══ */
+function calcTimings(queueLen,avgTiles){
+  if(queueLen===0)return{T_SCROLL:BASE_SCROLL,T_PAUSE:BASE_PAUSE,T_FLIP:BASE_FLIP,T_AFTER:BASE_AFTER,T_BETWEEN:BASE_BETWEEN};
+  const basePerEntry=BASE_SCROLL+BASE_PAUSE+avgTiles*BASE_FLIP+BASE_AFTER+BASE_BETWEEN;
+  const scale=Math.min(1,TARGET_MS/(basePerEntry*queueLen));
+  return{
+    T_SCROLL:Math.max(80,Math.round(BASE_SCROLL*scale)),
+    T_PAUSE:Math.max(30,Math.round(BASE_PAUSE*scale)),
+    T_FLIP:Math.max(25,Math.round(BASE_FLIP*scale)),
+    T_AFTER:Math.max(60,Math.round(BASE_AFTER*scale)),
+    T_BETWEEN:Math.max(20,Math.round(BASE_BETWEEN*scale)),
+  };
+}
+
+/* ═══ CONTINENT MAP ═══ */
+function latLonToXY(lat,lon){
+  const W=800,H=450;
+  return{x:(lon+180)/360*W,y:(90-lat)/180*H};
+}
+let mapViewbox={x1:0,y1:0,x2:800,y2:450};
+let mapDots={}; // country -> SVG circle el
+
+function initMap(continentKey){
+  const svg=$("continentSvg");
+  svg.innerHTML="";mapDots={};
+  const countries=BY_CONTINENT[continentKey]||[];
+  const meta=CONTINENT_META[continentKey];
+  const pts=countries.map(c=>latLonToXY(COUNTRY_GEO[c].lat,COUNTRY_GEO[c].lon));
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+  const pad=30;
+  const vx1=Math.max(0,Math.min(...xs)-pad),vy1=Math.max(0,Math.min(...ys)-pad);
+  const vx2=Math.min(800,Math.max(...xs)+pad),vy2=Math.min(450,Math.max(...ys)+pad);
+  mapViewbox={x1:vx1,y1:vy1,x2:vx2,y2:vy2};
+  svg.setAttribute("viewBox",`${vx1} ${vy1} ${vx2-vx1} ${vy2-vy1}`);
+  // Graticule lines
+  const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+  for(let lon=-180;lon<=180;lon+=30){
+    const x=(lon+180)/360*800;
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",x);line.setAttribute("y1",0);line.setAttribute("x2",x);line.setAttribute("y2",450);
+    line.setAttribute("stroke","rgba(255,255,255,0.04)");line.setAttribute("stroke-width","0.5");
+    g.appendChild(line);
   }
-  function findClosest(g,prefixNorm){
-    let best=null,bs=-Infinity;
-    for(const[key,orig]of BY_KEY){
-      if(prefixNorm&&!key.startsWith(prefixNorm))continue;
-      const ml=Math.max(g.length,key.length)||1;
-      const sc=0.55*jw(g,key)+0.35*(1-lev(g,key)/ml);
-      if(sc>bs){bs=sc;best=orig;}
-    }
-    if(!best){for(const[key,orig]of BY_KEY){const ml=Math.max(g.length,key.length)||1;const sc=0.55*jw(g,key)+0.35*(1-lev(g,key)/ml);if(sc>bs){bs=sc;best=orig;}}}
-    return best;
+  for(let lat=-90;lat<=90;lat+=30){
+    const y=(90-lat)/180*450;
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",0);line.setAttribute("y1",y);line.setAttribute("x2",800);line.setAttribute("y2",y);
+    line.setAttribute("stroke","rgba(255,255,255,0.04)");line.setAttribute("stroke-width","0.5");
+    g.appendChild(line);
   }
-  function minLevToAny(g){let b=Infinity;for(const[k]of BY_KEY){const d=lev(g,k);if(d<b)b=d;}return b;}
-  function isCoherent(g){
-    if(!g.length||g.length>MAX_GUESS_LEN)return false;
-    return minLevToAny(g)<=Math.ceil(g.length*0.50);
-  }
+  svg.appendChild(g);
+  // Country dots
+  countries.forEach(cname=>{
+    const pt=latLonToXY(COUNTRY_GEO[cname].lat,COUNTRY_GEO[cname].lon);
+    const grp=document.createElementNS("http://www.w3.org/2000/svg","g");
+    const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    circle.setAttribute("cx",pt.x);circle.setAttribute("cy",pt.y);circle.setAttribute("r","4");
+    circle.setAttribute("fill","rgba(150,170,210,0.3)");circle.setAttribute("stroke","rgba(150,170,210,0.5)");
+    circle.setAttribute("stroke-width","0.8");circle.className.baseVal="country-dot";
+    circle.dataset.country=cname;
+    const label=document.createElementNS("http://www.w3.org/2000/svg","text");
+    label.setAttribute("x",pt.x);label.setAttribute("y",pt.y-7);label.className.baseVal="dot-label";
+    label.textContent=cname.length>10?cname.split(" ")[0]:cname;
+    grp.appendChild(circle);grp.appendChild(label);svg.appendChild(grp);
+    mapDots[cname]={circle,label};
+  });
+  updateMapProgress();
+}
 
-  /* ── Colorize ───────────────────────────────────────────────────────── */
-  function colorize(guessRaw,target){
-    const g=norm(guessRaw).split(""),t=norm(target).split("");
-    const len=Math.max(g.length,t.length);
-    const counts=new Map();for(const ch of t)counts.set(ch,(counts.get(ch)||0)+1);
-    const mark=new Array(len).fill(null);
-    for(let i=0;i<len;i++){
-      if(i>=g.length){mark[i]="w";continue;}if(i>=t.length){mark[i]="k";continue;}
-      if(g[i]===t[i]){mark[i]="g";counts.set(g[i],counts.get(g[i])-1);}
-    }
-    for(let i=0;i<len;i++){
-      if(mark[i]!==null)continue;const ch=g[i],c=counts.get(ch)||0;
-      if(c>0){mark[i]="y";counts.set(ch,c-1);}else{mark[i]="r";}
-    }
-    return Array.from({length:len},(_,i)=>({char:mark[i]==="w"?"·":(g[i]??""),cls:mark[i]}));
-  }
+function markCountryOnMap(cname){
+  if(!mapDots[cname])return;
+  const {circle,label}=mapDots[cname];
+  const meta=CONTINENT_META[currentMode.continentKey];
+  circle.setAttribute("fill",meta?meta.color:"#4fffb0");
+  circle.setAttribute("r","6");circle.setAttribute("stroke",meta?meta.color:"#4fffb0");
+  circle.setAttribute("stroke-width","2");circle.setAttribute("opacity","0.9");
+  circle.classList.add("found");label.classList.add("show");
+  // Pulse: grow then shrink
+  circle.setAttribute("r","11");
+  setTimeout(()=>circle.setAttribute("r","6"),450);
+}
 
-  /* ── Ghost ──────────────────────────────────────────────────────────── */
-  function setGhost(ghostEl,hint,skipLetters,typed){
-    if(!ghostEl||!hint?.length){if(ghostEl)ghostEl.innerHTML="";return;}
-    const suffix=hint.slice(skipLetters);
-    const spacer=`<span class="gh-typed">${esc(typed)}</span>`;
-    const remain=suffix.slice(typed.length).map(({char,cls})=>`<span class="${cls}">${esc(char)}</span>`).join("");
-    ghostEl.innerHTML=spacer+`<span class="gh-rem">${remain}</span>`;
-  }
+function updateMapProgress(){
+  if(currentMode.type!=="continent")return;
+  const total=currentMode.countries.length;
+  const found=[...guessed.keys()].filter(c=>currentMode.countries.includes(c)).length;
+  $("mapProgress").textContent=`${found} / ${total}`;
+  $("mapTitle").textContent=(CONTINENT_META[currentMode.continentKey]?.name||"Continent")+" Map";
+}
 
-  /* ── Toast ──────────────────────────────────────────────────────────── */
-  let toastTimer=null;
-  function showToast(msg){
-    const t=$("toast");t.textContent=msg;t.classList.add("show");
-    clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);
-  }
-
-  /* ── Live score ─────────────────────────────────────────────────────── */
-  function updateLiveScore(delta){
-    $("liveScore").textContent=totalScore;
-    const el=$("liveScore");el.classList.remove("up","down");
-    if(delta>0){el.classList.add("up");setTimeout(()=>el.classList.remove("up"),700);}
-    else if(delta<0){el.classList.add("down");setTimeout(()=>el.classList.remove("down"),700);}
-  }
-
-  /* ── Score float animation ──────────────────────────────────────────── */
-  function floatScore(pts, anchorEl){
-    // Both rects are viewport-relative — no scrollY needed since we use fixed positioning
-    const scoreRect=$("scoreLiveEl").getBoundingClientRect();
-    const anchorRect=anchorEl.getBoundingClientRect();
-
-    const el=document.createElement("div");
-    el.className="score-float";
-    el.textContent=(pts>0?"+":"")+pts;
-    el.style.color=pts>0?"var(--green)":"var(--red)";
-    el.style.left=(anchorRect.left+anchorRect.width/2-16)+"px";
-    el.style.top=(anchorRect.top-4)+"px";
-    document.body.appendChild(el);
-
-    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
-      el.style.transition="opacity 0.65s ease, left 0.65s ease, top 0.65s ease, transform 0.65s ease";
-      el.style.opacity="0";
-      el.style.left=(scoreRect.left+scoreRect.width/2-16)+"px";
-      el.style.top=(scoreRect.top-10)+"px";
-      el.style.transform="scale(1.3)";
-      setTimeout(()=>{el.remove();updateLiveScore(pts);},680);
-    });});
-  }
-
-  /* ── Reveal animation for one entry ────────────────────────────────────
-   * entry = { rowEl, inpWrap, pfxLetters, result, hint, pts, country, name, T }
-   * hint = full colorize array for the whole normalised name
-   * pfxLetters = how many letters are already shown as static text
-   */
-  async function animateEntry(entry){
-    const {rowEl, inpWrap, pfxLetters, result, hint, pts, name, T} = entry;
-
-    // 1. Scroll row into center of the board-scroll container
-    const boardEl=$("board");
-    const rowTop=rowEl.offsetTop;
-    const targetScroll=rowTop-(boardEl.clientHeight/2)+(rowEl.offsetHeight/2);
-    boardEl.scrollTo({top:Math.max(0,targetScroll),behavior:"smooth"});
-    rowEl.classList.add("animating");
-    await wait(T.T_SCROLL+T.T_PAUSE);
-
-    // 2. Hide the input wrap (keep layout stable), insert tiles after prefix
-    inpWrap.style.visibility="hidden";
-
-    // Suffix hint = everything after the already-revealed prefix letters
-    const suffixHint = hint.slice(pfxLetters);
-
-    const tilesWrap=document.createElement("div");
-    tilesWrap.className="reveal-tiles";
-    rowEl.insertBefore(tilesWrap, inpWrap);
-
-    const tiles=suffixHint.map(({char})=>{
-      const t=document.createElement("span");
-      t.className="rtile";
-      t.textContent=char||"·";
-      tilesWrap.appendChild(t);
-      return t;
-    });
-
-    await wait(30);
-
-    // 3. Flip tiles one by one
-    for(let i=0;i<tiles.length;i++){
-      await wait(T.T_FLIP);
-      tiles[i].classList.add("flipped", suffixHint[i].cls);
-    }
-
-    // 4. Float score up for correct answers
-    await wait(60);
-    if(pts>0){
-      totalScore+=pts;
-      floatScore(pts, rowEl);
-    }
-
-    await wait(T.T_AFTER);
-
-    // 5. Settle into final row state — rewrite row contents in-place
-    tilesWrap.remove();
-    inpWrap.style.visibility="";
-    rowEl.classList.remove("animating");
-
-    if(result==="correct"){
-      // Replace row content with the clean guessed state: full name + badge
-      rowEl.innerHTML="";
-      rowEl.className="crow guessed";
-      const pfxEl=document.createElement("span");
-      pfxEl.className="pfx"; pfxEl.textContent=name;
-      const badge=document.createElement("span");
-      badge.className="badge"; badge.textContent="✓ R"+round;
-      rowEl.appendChild(pfxEl); rowEl.appendChild(badge);
-      $("guessedCount").textContent=guessed.size;
-    }
-    // For wrong: clear ghost too so nothing flashes before renderBoard
-    if(result==="wrong"){
-      const ghost=inpWrap.querySelector(".ghost");
-      if(ghost)ghost.innerHTML="";
-    }
-  }
-
-  /* ── Board ──────────────────────────────────────────────────────────── */
-  const SORTED=[...COUNTRIES].sort((a,b)=>a.localeCompare(b));
-  let inputRefs=new Map(); // country -> {inp,ghostEl,prefix,prefixLetters,prefixNorm,rowEl,inpWrap}
-
-  function renderBoard(){
-    inputRefs.clear();
-    const board=$("board");board.innerHTML="";
-    let firstInp=null,curLetter="",grpEl=null;
-
-    for(const name of SORTED){
-      const letter=name[0].toUpperCase();
-      if(letter!==curLetter){
-        curLetter=letter;grpEl=document.createElement("div");grpEl.className="letter-group";
-        const hdr=document.createElement("div");hdr.className="letter-hdr";hdr.textContent=letter;
-        grpEl.appendChild(hdr);board.appendChild(grpEl);
-      }
-      const isGuessed=guessed.has(name);
-      const row=document.createElement("div");
-
-      if(gameOver){
-        if(isGuessed){
-          row.className="crow guessed";
-          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
-          const b=document.createElement("span");b.className="badge";b.textContent=`✓ R${guessed.get(name)}`;
-          row.appendChild(pfx);row.appendChild(b);
-        }else{
-          row.className="crow missed";
-          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
-          const b=document.createElement("span");b.className="badge";b.textContent="✗ missed";
-          row.appendChild(pfx);row.appendChild(b);
-        }
-      }else{
-        row.className="crow"+(isGuessed?" guessed":"");
-        if(isGuessed){
-          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
-          const b=document.createElement("span");b.className="badge";b.textContent=`✓ R${guessed.get(name)}`;
-          row.appendChild(pfx);row.appendChild(b);
-        }else{
-          const pfxStr=revealPrefix(name,revealLetters);
-          const pfxLetters=letterCount(pfxStr);
-          const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=pfxStr;
-          row.appendChild(pfx);
-
-          const wrap=document.createElement("div");wrap.className="inp-wrap";
-          const ghostEl=document.createElement("div");ghostEl.className="ghost";wrap.appendChild(ghostEl);
-          const inp=document.createElement("input");
-          inp.type="text";inp.className="cinput";
-          inp.autocomplete="off";inp.autocorrect="off";inp.autocapitalize="off";inp.spellcheck=false;
-
-          const hint=hintFor.get(name);
-          if(hint)setGhost(ghostEl,hint,pfxLetters,"");
-
-          inp.addEventListener("input",()=>{
-            const h=hintFor.get(name);if(h)setGhost(ghostEl,h,pfxLetters,inp.value);
-          });
-          inp.addEventListener("blur",()=>{
-            const suffix=inp.value.trim();if(!suffix)return;
-            const k=norm(pfxStr+suffix);
-            if(!isCoherent(k)){
-              showToast(QUIPS[Math.floor(Math.random()*QUIPS.length)]);
-              inp.value="";
-              const h=hintFor.get(name);
-              if(h)setGhost(ghostEl,h,pfxLetters,"");else ghostEl.innerHTML="";
-              totalScore-=PEN_NONSENSE;updateLiveScore(-PEN_NONSENSE);
-            }
-          });
-          inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();focusNext(name);}});
-
-          wrap.appendChild(inp);row.appendChild(wrap);
-
-          // History ? button
-          const hist=historyFor.get(name);
-          if(hist?.length>0){
-            const hbtn=document.createElement("button");
-            hbtn.className="hist-btn";hbtn.setAttribute("tabindex","-1");hbtn.textContent="?";
-            const tip=document.createElement("div");tip.className="hist-tip";
-            const hdr2=document.createElement("div");hdr2.className="hist-tip-hdr";hdr2.textContent="Previous guesses";
-            tip.appendChild(hdr2);
-            for(const{guess,hint:gh}of hist){
-              const row2=document.createElement("div");row2.className="ht-row";
-              const gl=document.createElement("span");
-              gl.style.cssText="font-size:11px;color:rgba(221,238,255,0.4);margin-right:6px;min-width:70px;display:inline-block;overflow:hidden;text-overflow:ellipsis;";
-              gl.textContent=guess;row2.appendChild(gl);
-              const hs=document.createElement("span");hs.style.display="flex";hs.style.gap="1px";
-              for(const{char,cls}of gh){const s=document.createElement("span");s.className="ht-ch "+cls;s.textContent=char;hs.appendChild(s);}
-              row2.appendChild(hs);tip.appendChild(row2);
-            }
-            hbtn.appendChild(tip);row.appendChild(hbtn);
-          }
-
-          inputRefs.set(name,{inp,ghostEl,prefix:pfxStr,prefixLetters:pfxLetters,
-            prefixNorm:norm(pfxStr.trimEnd()),rowEl:row,inpWrap:wrap});
-          if(!firstInp)firstInp=inp;
-        }
-      }
-      grpEl.appendChild(row);
-    }
+/* ═══ ANIMATE ENTRY ═══ */
+async function animateEntry(entry){
+  const{rowEl,inpWrap,pfxLetters,result,hint,pts,name,T}=entry;
+  const boardEl=$("board");
+  const rowTop=rowEl.offsetTop;
+  const targetScroll=rowTop-(boardEl.clientHeight/2)+(rowEl.offsetHeight/2);
+  boardEl.scrollTo({top:Math.max(0,targetScroll),behavior:"smooth"});
+  rowEl.classList.add("animating");
+  await wait(T.T_SCROLL+T.T_PAUSE);
+  inpWrap.style.visibility="hidden";
+  const suffixHint=hint.slice(pfxLetters);
+  const tilesWrap=document.createElementNS?null:null;
+  const tw=document.createElement("div");tw.className="reveal-tiles";
+  rowEl.insertBefore(tw,inpWrap);
+  const tiles=suffixHint.map(({char})=>{
+    const t=document.createElement("span");t.className="rtile";t.textContent=char||"·";tw.appendChild(t);return t;
+  });
+  await wait(30);
+  for(let i=0;i<tiles.length;i++){await wait(T.T_FLIP);tiles[i].classList.add("flipped",suffixHint[i].cls);}
+  await wait(60);
+  if(pts>0){totalScore+=pts;floatScore(pts,rowEl);}
+  await wait(T.T_AFTER);
+  tw.remove();inpWrap.style.visibility="";rowEl.classList.remove("animating");
+  if(result==="correct"){
+    rowEl.innerHTML="";rowEl.className="crow guessed";
+    const pfxEl=document.createElement("span");pfxEl.className="pfx";pfxEl.textContent=name;
+    const badge=document.createElement("span");badge.className="badge";badge.textContent="✓ R"+round;
+    rowEl.appendChild(pfxEl);rowEl.appendChild(badge);
     $("guessedCount").textContent=guessed.size;
-    $("totalCount").textContent=COUNTRIES.length;
-    if(firstInp&&!gameOver)firstInp.focus();
+    if(currentMode.type==="continent"){markCountryOnMap(name);updateMapProgress();}
+  }else{
+    const ghost=inpWrap.querySelector(".ghost");if(ghost)ghost.innerHTML="";
   }
+}
 
-  function focusNext(cur){
-    const idx=SORTED.indexOf(cur);
-    for(let i=idx+1;i<SORTED.length;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
-    for(let i=0;i<idx;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
-  }
+/* ═══ BOARD ═══ */
+let inputRefs=new Map();
 
-  function renderDots(){
-    const c=$("roundDots");c.innerHTML="";
-    for(let i=1;i<=TOTAL_ROUNDS;i++){
-      const d=document.createElement("div");
-      d.className="round-dot"+(i<round?" done":i===round?" active":"");
-      c.appendChild(d);
+function renderBoard(){
+  inputRefs.clear();
+  const board=$("board");board.innerHTML="";
+  let firstInp=null,curLetter="",grpEl=null;
+  for(const name of SORTED){
+    const letter=name[0].toUpperCase();
+    if(letter!==curLetter){
+      curLetter=letter;grpEl=document.createElement("div");grpEl.className="letter-group";
+      const hdr=document.createElement("div");hdr.className="letter-hdr";hdr.textContent=letter;
+      grpEl.appendChild(hdr);board.appendChild(grpEl);
     }
-  }
-
-  /* ── Submit: compute results, then animate, then show modal ─────────── */
-  function submitRound(){
-    if(animating)return;
-    try{
-      $("submitBtn").disabled=true;
-
-      // 1. Collect
-      const subs=[];
-      for(const[,ref]of inputRefs){
-        const suffix=ref.inp.value.trim();
-        if(suffix)subs.push({raw:ref.prefix+suffix,ref});
+    const isGuessed=guessed.has(name);
+    const row=document.createElement("div");
+    if(gameOver){
+      if(isGuessed){
+        row.className="crow guessed";
+        const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
+        const b=document.createElement("span");b.className="badge";b.textContent=`✓ R${guessed.get(name)}`;
+        row.appendChild(pfx);row.appendChild(b);
+      }else{
+        row.className="crow missed";
+        const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
+        const b=document.createElement("span");b.className="badge";b.textContent="✗ missed";
+        row.appendChild(pfx);row.appendChild(b);
       }
-      // Deduplicate by norm
-      const seen=new Set(),unique=[];
-      for(const s of subs){const k=norm(s.raw);if(k&&!seen.has(k)){seen.add(k);unique.push(s);}}
-
-      // 2. Compute all results upfront (don't mutate state yet)
-      const queue=[]; // animation entries
-      let roundDelta=0,correctCount=0,wrongCount=0,rejCount=0;
-      const queuedCorrect=new Set(); // track correct answers queued (to avoid double-count)
-      const pendingHints=new Map();  // country->hint
-      const pendingHistory=[];
-
-      for(const{raw,ref}of unique){
-        const k=norm(raw);
-        const exact=BY_KEY.get(k);
-        if(exact&&!guessed.has(exact)&&!queuedCorrect.has(exact)){
-          // ✅ Correct — build all-green hint for the FULL normalised name
-          const pts=ROUND_PTS[round]??0;
-          roundDelta+=pts; correctCount++;
-          queuedCorrect.add(exact);
-          const hint=norm(exact).split("").map(ch=>({char:ch,cls:"g"}));
-          queue.push({country:exact,name:exact,ref,guess:raw,result:"correct",hint,pts});
-        } else if(exact&&(guessed.has(exact)||queuedCorrect.has(exact))){
-          // Already guessed — skip silently
-        } else {
-          // Safety net coherence
-          if(!isCoherent(k)){roundDelta-=PEN_NONSENSE;rejCount++;continue;}
-          // ❌ Wrong — find closest country respecting prefix
-          const closest=findClosest(k,ref.prefixNorm);
-          const hint=colorize(raw,closest);
-          pendingHints.set(closest,hint);
-          pendingHistory.push({country:closest,guess:raw,hint});
-          wrongCount++;
-          queue.push({country:closest,name:closest,ref,guess:raw,result:"wrong",hint,pts:0});
-        }
-      }
-
-      // 3. Compute adaptive timings, then run animation per-entry
-      const avgTiles = queue.length
-        ? queue.reduce((s,e)=>s+e.hint.length,0)/queue.length
-        : 8;
-      const T=calcTimings(queue.length, avgTiles);
-
-      animating=true;
-      (async()=>{
-        for(const entry of queue){
-          await animateEntry({
-            rowEl:      entry.ref.rowEl,
-            inpWrap:    entry.ref.inpWrap,
-            pfxLetters: entry.ref.prefixLetters,
-            result:     entry.result,
-            hint:       entry.hint,
-            pts:        entry.pts,
-            country:    entry.country,
-            name:       entry.name,
-            T,
-          });
-          // Commit correct guesses immediately (animateEntry already rewrote the row)
-          if(entry.result==="correct"){
-            guessed.set(entry.country, round);
-            $("guessedCount").textContent=guessed.size;
+    }else{
+      row.className="crow"+(isGuessed?" guessed":"");
+      if(isGuessed){
+        const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=name;
+        const b=document.createElement("span");b.className="badge";b.textContent=`✓ R${guessed.get(name)}`;
+        row.appendChild(pfx);row.appendChild(b);
+      }else{
+        const pfxStr=revealPrefix(name,revealLetters);
+        const pfxLetters=letterCount(pfxStr);
+        const pfx=document.createElement("span");pfx.className="pfx";pfx.textContent=pfxStr;row.appendChild(pfx);
+        const wrap=document.createElement("div");wrap.className="inp-wrap";
+        const ghostEl=document.createElement("div");ghostEl.className="ghost";wrap.appendChild(ghostEl);
+        const inp=document.createElement("input");inp.type="text";inp.className="cinput";
+        inp.autocomplete="off";inp.autocorrect="off";inp.autocapitalize="off";inp.spellcheck=false;
+        const hint=hintFor.get(name);if(hint)setGhost(ghostEl,hint,pfxLetters,"");
+        inp.addEventListener("input",()=>{const h=hintFor.get(name);if(h)setGhost(ghostEl,h,pfxLetters,inp.value);});
+        inp.addEventListener("blur",()=>{
+          const suffix=inp.value.trim();if(!suffix)return;
+          const k=norm(pfxStr+suffix);
+          if(!isCoherent(k)){
+            showToast(QUIPS[Math.floor(Math.random()*QUIPS.length)]);
+            inp.value="";const h=hintFor.get(name);
+            if(h)setGhost(ghostEl,h,pfxLetters,"");else ghostEl.innerHTML="";
+            totalScore-=PEN_NONSENSE;updateLiveScore(-PEN_NONSENSE);
           }
-          // Wrong hints are committed in bulk after the loop to avoid ghost flash
-          await wait(T.T_BETWEEN);
+        });
+        inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();focusNext(name);}});
+        wrap.appendChild(inp);row.appendChild(wrap);
+        const hist=historyFor.get(name);
+        if(hist?.length>0){
+          const hbtn=document.createElement("button");hbtn.className="hist-btn";hbtn.setAttribute("tabindex","-1");hbtn.textContent="?";
+          const tip=document.createElement("div");tip.className="hist-tip";
+          const hdr2=document.createElement("div");hdr2.className="hist-tip-hdr";hdr2.textContent="Previous guesses";tip.appendChild(hdr2);
+          for(const{guess,hint:gh}of hist){
+            const row2=document.createElement("div");row2.className="ht-row";
+            const gl=document.createElement("span");gl.style.cssText="font-size:11px;color:rgba(221,238,255,0.4);margin-right:6px;min-width:70px;display:inline-block;overflow:hidden;text-overflow:ellipsis;";
+            gl.textContent=guess;row2.appendChild(gl);
+            const hs2=document.createElement("span");hs2.style.display="flex";hs2.style.gap="1px";
+            for(const{char,cls}of gh){const s=document.createElement("span");s.className="ht-ch "+cls;s.textContent=char;hs2.appendChild(s);}
+            row2.appendChild(hs2);tip.appendChild(row2);
+          }
+          hbtn.appendChild(tip);row.appendChild(hbtn);
         }
+        inputRefs.set(name,{inp,ghostEl,prefix:pfxStr,prefixLetters:pfxLetters,prefixNorm:norm(pfxStr.trimEnd()),rowEl:row,inpWrap:wrap});
+        if(!firstInp)firstInp=inp;
+      }
+    }
+    grpEl.appendChild(row);
+  }
+  $("guessedCount").textContent=guessed.size;
+  $("totalCount").textContent=currentMode.countries.length;
+  if(firstInp&&!gameOver)firstInp.focus();
+}
 
-        // 4. Commit remaining non-animated state (hints, history)
-        for(const[c,h]of pendingHints) hintFor.set(c,h);
-        for(const{country,guess,hint} of pendingHistory){
-          if(!historyFor.has(country))historyFor.set(country,[]);
-          historyFor.get(country).push({guess,hint});
+function focusNext(cur){
+  const idx=SORTED.indexOf(cur);
+  for(let i=idx+1;i<SORTED.length;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
+  for(let i=0;i<idx;i++){const r=inputRefs.get(SORTED[i]);if(r){r.inp.focus();return;}}
+}
+
+function renderDots(){
+  const c=$("roundDots");c.innerHTML="";
+  for(let i=1;i<=TOTAL_ROUNDS;i++){
+    const d=document.createElement("div");
+    d.className="round-dot"+(i<round?" done":i===round?" active":"");
+    c.appendChild(d);
+  }
+}
+
+/* ═══ SUBMIT ROUND ═══ */
+function submitRound(){
+  if(animating)return;
+  try{
+    $("submitBtn").disabled=true;
+    const subs=[];
+    for(const[,ref]of inputRefs){const suffix=ref.inp.value.trim();if(suffix)subs.push({raw:ref.prefix+suffix,ref});}
+    const seen=new Set(),unique=[];
+    for(const s of subs){const k=norm(s.raw);if(k&&!seen.has(k)){seen.add(k);unique.push(s);}}
+    const queue=[];let roundDelta=0,correctCount=0,wrongCount=0,rejCount=0;
+    const queuedCorrect=new Set();const pendingHints=new Map();const pendingHistory=[];
+    const modeSet=new Set(currentMode.countries.map(c=>norm(c)));
+    for(const{raw,ref}of unique){
+      const k=norm(raw);
+      const exact=BY_KEY.get(k);
+      const inMode=exact&&modeSet.has(k);
+      if(inMode&&!guessed.has(exact)&&!queuedCorrect.has(exact)){
+        const pts=ROUND_PTS[round]??0;roundDelta+=pts;correctCount++;queuedCorrect.add(exact);
+        const hint=norm(exact).split("").map(ch=>({char:ch,cls:"g"}));
+        queue.push({country:exact,name:exact,ref,guess:raw,result:"correct",hint,pts});
+      }else if(inMode&&(guessed.has(exact)||queuedCorrect.has(exact))){
+        // already got it
+      }else{
+        if(!isCoherent(k)){roundDelta-=PEN_NONSENSE;rejCount++;continue;}
+        const closest=findClosest(k,ref.prefixNorm);
+        if(!closest)continue;
+        const hint=colorize(raw,closest);
+        pendingHints.set(closest,hint);pendingHistory.push({country:closest,guess:raw,hint});
+        wrongCount++;queue.push({country:closest,name:closest,ref,guess:raw,result:"wrong",hint,pts:0});
+      }
+    }
+    const avgTiles=queue.length?queue.reduce((s,e)=>s+e.hint.length,0)/queue.length:8;
+    const T=calcTimings(queue.length,avgTiles);
+    animating=true;
+    (async()=>{
+      for(const entry of queue){
+        await animateEntry({rowEl:entry.ref.rowEl,inpWrap:entry.ref.inpWrap,pfxLetters:entry.ref.prefixLetters,result:entry.result,hint:entry.hint,pts:entry.pts,name:entry.name,T});
+        if(entry.result==="correct"){guessed.set(entry.country,round);$("guessedCount").textContent=guessed.size;}
+        // Early exit if all countries found
+        if(guessed.size>=currentMode.countries.length){
+          for(const[c,h]of pendingHints)hintFor.set(c,h);
+          for(const{country,guess,hint}of pendingHistory){if(!historyFor.has(country))historyFor.set(country,[]);historyFor.get(country).push({guess,hint});}
+          animating=false;gameOver=true;renderBoard();
+          await wait(400);await saveScore();showFinalModal();return;
         }
+        await wait(T.T_BETWEEN);
+      }
+      for(const[c,h]of pendingHints)hintFor.set(c,h);
+      for(const{country,guess,hint}of pendingHistory){if(!historyFor.has(country))historyFor.set(country,[]);historyFor.get(country).push({guess,hint});}
+      animating=false;renderBoard();
+      $("roundCorrect").textContent=correctCount;$("roundWrong").textContent=wrongCount;
+      const blankCount=Math.max(0,currentMode.countries.length-guessed.size-wrongCount);
+      await wait(350);
+      if(round<TOTAL_ROUNDS){
+        showRoundModal(correctCount,wrongCount,blankCount,roundDelta,rejCount);
+      }else{
+        const missedCount=currentMode.countries.length-guessed.size;
+        const missedPen=missedCount*PEN_MISSED;totalScore-=missedPen;updateLiveScore(-missedPen);
+        gameOver=true;renderBoard();await wait(200);
+        await saveScore();showFinalModal();
+      }
+    })();
+  }catch(e){animating=false;$("errBanner").style.display="block";$("errBanner").textContent="Error: "+(e?.message||e);console.error(e);}
+}
 
-        animating=false;
-        renderBoard();
-
-        $("roundCorrect").textContent=correctCount;
-        $("roundWrong").textContent=wrongCount;
-        const blankCount=Math.max(0,COUNTRIES.length-guessed.size-wrongCount);
-
-        await wait(350);
-        if(round<TOTAL_ROUNDS){
-          showRoundModal(correctCount,wrongCount,blankCount,roundDelta,rejCount);
-        } else {
-          const missedCount=COUNTRIES.length-guessed.size;
-          const missedPen=missedCount*PEN_MISSED;
-          totalScore-=missedPen;
-          updateLiveScore(-missedPen);
-          gameOver=true;
-          renderBoard();
-          await wait(200);
-          showFinalModal();
-        }
-      })();
-
-    }catch(e){
-      animating=false;
-      $("errBanner").style.display="block";
-      $("errBanner").textContent="Error: "+(e?.message||e);
-      console.error(e);
-    }
+/* ═══ ROUND MODAL ═══ */
+function showRoundModal(correctCount,wrongCount,blankCount,delta,rejCount){
+  $("mRoundLabel").textContent=`Round ${round} / ${TOTAL_ROUNDS}`;
+  $("mCorrect").textContent=correctCount;$("mWrong").textContent=wrongCount;$("mBlank").textContent=blankCount;
+  $("mSub").innerHTML=`<b>${guessed.size}</b> guessed &nbsp;·&nbsp; <b>${currentMode.countries.length-guessed.size}</b> remaining`;
+  const deltaEl=$("ptsDelta");deltaEl.classList.remove("show","pos","neg");
+  deltaEl.textContent=(delta>=0?"+":"")+delta;deltaEl.classList.add(delta>=0?"pos":"neg");
+  setTimeout(()=>deltaEl.classList.add("show"),40);
+  const parts=[];
+  if(correctCount>0)parts.push(`+${correctCount*(ROUND_PTS[round]??0)} correct`);
+  if(rejCount>0)parts.push(`−${rejCount*PEN_NONSENSE} nonsense`);
+  $("ptsBreakdown").textContent=parts.join(" · ")||"No submissions";
+  $("roundModal").classList.add("open");
+}
+function closeRoundModal(){
+  $("roundModal").classList.remove("open");
+  if(round<TOTAL_ROUNDS){
+    round++;revealLetters=round;
+    $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
+    $("revealPill").textContent=revealLetters;
+    $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
+    $("submitBtn").disabled=false;
+    renderDots();renderBoard();
   }
+}
 
-  function showRoundModal(correctCount,wrongCount,blankCount,delta,rejCount){
-    $("mRoundLabel").textContent=`Round ${round} / ${TOTAL_ROUNDS}`;
-    $("mCorrect").textContent=correctCount;$("mWrong").textContent=wrongCount;$("mBlank").textContent=blankCount;
-    $("mSub").innerHTML=`<b>${guessed.size}</b> guessed total &nbsp;·&nbsp; <b>${COUNTRIES.length-guessed.size}</b> remaining`;
-    const deltaEl=$("ptsDelta");
-    deltaEl.classList.remove("show","pos","neg");
-    deltaEl.textContent=(delta>=0?"+":"")+delta;
-    deltaEl.classList.add(delta>=0?"pos":"neg");
-    setTimeout(()=>deltaEl.classList.add("show"),40);
-    const parts=[];
-    if(correctCount>0)parts.push(`+${correctCount*(ROUND_PTS[round]??0)} correct`);
-    if(rejCount>0)parts.push(`−${rejCount*PEN_NONSENSE} nonsense`);
-    $("ptsBreakdown").textContent=parts.join(" · ")||"No submissions";
-    $("roundModal").classList.add("open");
+/* ═══ FINAL MODAL ═══ */
+async function showFinalModal(){
+  const pts={1:5,2:3,3:1,4:0};let c1=0,c2=0,c3=0,c4=0,missed=0;
+  for(const c of currentMode.countries){
+    if(guessed.has(c)){const r=guessed.get(c);if(r===1)c1++;else if(r===2)c2++;else if(r===3)c3++;else c4++;}
+    else missed++;
   }
-
-  function closeRoundModal(){
-    $("roundModal").classList.remove("open");
-    if(round<TOTAL_ROUNDS){
-      round++;revealLetters=round;
-      $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
-      $("revealPill").textContent=revealLetters;
-      $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
-      $("submitBtn").disabled=false;$("submitBtn").style.display="inline-block";
-      renderDots();renderBoard();
-    }
-  }
-
-  function showFinalModal(){
-    const pts={1:5,2:3,3:1,4:0};let c1=0,c2=0,c3=0,c4=0,missed=0;
-    for(const c of COUNTRIES){
-      if(guessed.has(c)){const r=guessed.get(c);if(r===1)c1++;else if(r===2)c2++;else if(r===3)c3++;else c4++;}
-      else missed++;
-    }
-    $("finalScoreNum").textContent=totalScore;
-    $("finalPct").textContent=`${guessed.size} / ${COUNTRIES.length} countries found`;
-    $("f1").textContent=c1;$("f2").textContent=c2;$("f3").textContent=c3;$("f4").textContent=c4;$("fMissed").textContent=missed;
-    const date=new Date().toISOString().slice(0,10);
-    $("shareCard").textContent=
-`LANDLE 🌍  ${date}
+  $("finalModeLabel").textContent=currentMode.label+" — Game Over";
+  $("finalScoreNum").textContent=totalScore;
+  $("finalPct").textContent=`${guessed.size} / ${currentMode.countries.length} found`;
+  $("f1").textContent=c1;$("f2").textContent=c2;$("f3").textContent=c3;$("f4").textContent=c4;$("fMissed").textContent=missed;
+  const date=new Date().toISOString().slice(0,10);
+  const extra=currentMode.type==="letter"?` · Letter ${currentMode.dailyKey}`:currentMode.type==="continent"?` · ${CONTINENT_META[currentMode.continentKey]?.name||""}` :"";
+  $("shareCard").textContent=
+`LANDLE 🌍  ${date}${extra}
 ━━━━━━━━━━━━━━━━━━━━
 🟩 R1 (+5): ${c1}  🟦 R2 (+3): ${c2}
 🟨 R3 (+1): ${c3}  ⬛ R4 (+0): ${c4}
 ❌ Missed (−3): ${missed}
 ━━━━━━━━━━━━━━━━━━━━
-SCORE: ${totalScore}  (${guessed.size}/${COUNTRIES.length})
+SCORE: ${totalScore}  (${guessed.size}/${currentMode.countries.length})
 Play LANDLE!`;
-    $("submitBtn").style.display="none";
-    $("finalModal").classList.add("open");
+  $("submitBtn").disabled=true;  // disable but keep visible
+  $("finalModal").classList.add("open");
+}
+
+/* ═══ STORAGE (localStorage fallback) ═══ */
+function lsGet(key){try{return localStorage.getItem(key);}catch(e){return null;}}
+function lsSet(key,val){try{localStorage.setItem(key,val);}catch(e){console.warn("localStorage error",e);}}
+
+async function saveScore(){
+  const entry={
+    date:new Date().toISOString().slice(0,10),
+    mode:currentMode.type,
+    score:totalScore,
+    guessed:guessed.size,
+    total:currentMode.countries.length,
+    dailyKey:currentMode.dailyKey,
+    continentKey:currentMode.continentKey,
+  };
+  try{
+    const raw=lsGet("landle-scores");
+    let existing=raw?JSON.parse(raw):[];
+    existing.push(entry);
+    if(existing.length>200)existing=existing.slice(-200);
+    lsSet("landle-scores",JSON.stringify(existing));
+    if(currentMode.type!=="grind"&&currentMode.dailyKey){
+      lsSet("landle-played-"+currentMode.dailyKey, entry.date);
+    }
+  }catch(e){console.warn("Storage error:",e);}
+}
+
+async function loadAllScores(){
+  try{const raw=lsGet("landle-scores");return raw?JSON.parse(raw):[];}
+  catch(e){return[];}
+}
+async function wasPlayedToday(dailyKey){
+  try{const val=lsGet("landle-played-"+dailyKey);return val===new Date().toISOString().slice(0,10);}
+  catch(e){return false;}
+}
+
+/* ═══ HIGHSCORES RENDERING ═══ */
+let currentHsTab="grind";
+function switchHsTab(tab,btn){
+  currentHsTab=tab;
+  document.querySelectorAll(".hs-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".hs-panel").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");
+  $("hsPanel"+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add("active");
+  renderHsPanel(tab);
+}
+async function loadHighscores(){
+  const scores=await loadAllScores();
+  renderHsPanel("grind",scores);
+}
+async function renderHsPanel(tab,scoresArg){
+  const scores=scoresArg||(await loadAllScores());
+  const filtered=scores.filter(s=>s.mode===tab).sort((a,b)=>a.date.localeCompare(b.date));
+  const panelId="hsPanel"+tab.charAt(0).toUpperCase()+tab.slice(1);
+  const panel=$(panelId);
+  if(filtered.length===0){panel.innerHTML=`<div class="hs-empty">No ${tab.toUpperCase()} games recorded yet.<br>Play a game to start tracking!</div>`;return;}
+  const best=Math.max(...filtered.map(s=>s.score));
+  const avg=Math.round(filtered.reduce((s,e)=>s+e.score,0)/filtered.length);
+  const bestPct=Math.round(Math.max(...filtered.map(s=>s.guessed/s.total*100)));
+  let html=`<div class="hs-stat-grid">
+    <div class="hs-stat-card"><div class="hs-stat-val" style="color:var(--green)">${best}</div><div class="hs-stat-lbl">Best Score</div></div>
+    <div class="hs-stat-card"><div class="hs-stat-val">${avg}</div><div class="hs-stat-lbl">Avg Score</div></div>
+    <div class="hs-stat-card"><div class="hs-stat-val" style="color:var(--yellow)">${filtered.length}</div><div class="hs-stat-lbl">Games Played</div></div>
+    <div class="hs-stat-card"><div class="hs-stat-val" style="color:var(--accent)">${bestPct}%</div><div class="hs-stat-lbl">Best %</div></div>
+  </div>
+  <div class="hs-graph"><div class="hs-graph-title">Score Over Time</div>${renderGraph(filtered)}</div>
+  <div class="hs-history"><div class="hs-history-hdr">History</div>`;
+  const recent=[...filtered].reverse().slice(0,50);
+  for(const s of recent){
+    const pct=Math.round(s.guessed/s.total*100);
+    const extra=s.mode==="letter"&&s.dailyKey?` · Letter ${s.dailyKey}`:s.mode==="continent"&&s.continentKey?` · ${CONTINENT_META[s.continentKey]?.name||s.continentKey}`:"";
+    html+=`<div class="hs-row"><span class="hs-row-date">${s.date}</span><span class="hs-row-mode" style="color:${s.score===best?"var(--green)":"var(--text)"}">${s.score===best?"⭐ ":""}${s.score}</span><span style="color:var(--muted);font-size:11px;margin-left:4px;">${extra}</span><span class="hs-row-pct">${pct}% (${s.guessed}/${s.total})</span></div>`;
   }
+  html+=`</div>`;
+  panel.innerHTML=html;
+}
 
-  function startGame(){
-    round=1;revealLetters=1;totalScore=0;gameOver=false;animating=false;
-    guessed=new Map();hintFor=new Map();historyFor=new Map();
-    $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
-    $("errBanner").style.display="none";
-    $("roundModal").classList.remove("open");$("finalModal").classList.remove("open");
-    $("submitBtn").style.display="inline-block";$("submitBtn").disabled=false;
-    $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
-    $("revealPill").textContent=revealLetters;$("liveScore").textContent="0";
-    renderDots();renderBoard();
+function renderGraph(data){
+  if(data.length<2)return`<svg id="graphSvg"><text x="50%" y="50%" text-anchor="middle" fill="rgba(221,238,255,0.3)" font-size="12" font-family="DM Mono,monospace">Need 2+ games to show graph</text></svg>`;
+  const W=800,H=140,PAD=20;
+  const scores=data.map(s=>s.score);
+  const minS=Math.min(...scores),maxS=Math.max(...scores);
+  const range=maxS-minS||1;
+  const pts=data.map((s,i)=>{
+    const x=PAD+(i/(data.length-1))*(W-PAD*2);
+    const y=H-PAD-((s.score-minS)/range)*(H-PAD*2);
+    return{x,y,s};
+  });
+  // Build path
+  let path=`M ${pts[0].x} ${pts[0].y}`;
+  for(let i=1;i<pts.length;i++){
+    const dx=(pts[i].x-pts[i-1].x)*0.35;
+    path+=` C ${pts[i-1].x+dx} ${pts[i-1].y} ${pts[i].x-dx} ${pts[i].y} ${pts[i].x} ${pts[i].y}`;
   }
+  // Fill area
+  let area=path+` L ${pts[pts.length-1].x} ${H-PAD} L ${pts[0].x} ${H-PAD} Z`;
+  const dots=pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="${p.s.score===Math.max(...scores)?"var(--green)":"var(--accent)"}"><title>${p.s.date}: ${p.s.score}</title></circle>`).join("");
+  const lastPt=pts[pts.length-1];
+  return`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:140px;overflow:visible">
+    <defs><linearGradient id="gfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#gfill)"/>
+    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+    ${dots}
+    <text x="${lastPt.x.toFixed(1)}" y="${(lastPt.y-8).toFixed(1)}" fill="var(--green)" font-size="10" font-family="DM Mono,monospace" text-anchor="middle">${data[data.length-1].score}</text>
+  </svg>`;
+}
 
-  async function copyShareCard(){
-    try{
-      await navigator.clipboard.writeText($("shareCard").textContent);
-      $("copyBtn").textContent="✅ Copied!";setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",2000);
-    }catch{$("copyBtn").textContent="Select text above";setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",3000);}
+/* ═══ SCREEN ROUTING ═══ */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>{s.classList.remove("active");});
+  setTimeout(()=>$(id).classList.add("active"),10);
+}
+
+function goToMenu(){
+  if(animating)return;
+  $("roundModal").classList.remove("open");$("finalModal").classList.remove("open");
+  showScreen("screenMenu");
+}
+
+/* ═══ MODE LAUNCHER ═══ */
+async function launchMode(type){
+  if(type==="letter"){
+    const letter=getDailyLetter();
+    const dailyKey=`letter-${DAY}`;
+    const played=await wasPlayedToday(dailyKey);
+    if(played&&!confirm(`You already played today's LETTER challenge (${letter})!\nPlay again anyway?`))return;
+    currentMode={type,countries:COUNTRIES.filter(c=>c[0].toUpperCase()===letter).sort((a,b)=>a.localeCompare(b)),label:`LETTER — ${letter}`,tag:"letter",dailyKey,continentKey:null};
+  }else if(type==="continent"){
+    const cKey=getDailyContinent();
+    const dailyKey=`continent-${DAY}`;
+    const played=await wasPlayedToday(dailyKey);
+    const meta=CONTINENT_META[cKey];
+    if(played&&!confirm(`You already played today's CONTINENT challenge (${meta.name})!\nPlay again anyway?`))return;
+    currentMode={type,countries:(BY_CONTINENT[cKey]||[]).slice().sort((a,b)=>a.localeCompare(b)),label:`CONTINENT — ${meta.name}`,tag:"continent",dailyKey,continentKey:cKey};
+  }else{
+    currentMode={type:"grind",countries:COUNTRIES,label:"GRIND",tag:"grind",dailyKey:null,continentKey:null};
   }
-
-  $("submitBtn").addEventListener("click",submitRound);
-  $("restartBtn").addEventListener("click",startGame);
-  $("finalRestartBtn").addEventListener("click",startGame);
-  $("copyBtn").addEventListener("click",copyShareCard);
-  $("roundModalClose").addEventListener("click",closeRoundModal);
-  $("roundModal").addEventListener("click",e=>{if(e.target===$("roundModal"))closeRoundModal();});
-  $("finalViewBtn").addEventListener("click",()=>$("finalModal").classList.remove("open"));
-  $("finalModal").addEventListener("click",e=>{if(e.target===$("finalModal"))$("finalModal").classList.remove("open");});
-
   startGame();
+  showScreen("screenGame");
+}
+
+/* ═══ START GAME ═══ */
+function startGame(){
+  round=1;revealLetters=1;totalScore=0;gameOver=false;animating=false;
+  guessed=new Map();hintFor=new Map();historyFor=new Map();
+  SORTED=[...currentMode.countries].sort((a,b)=>a.localeCompare(b));
+  $("roundCorrect").textContent="0";$("roundWrong").textContent="0";
+  $("errBanner").style.display="none";
+  $("roundModal").classList.remove("open");$("finalModal").classList.remove("open");
+  $("submitBtn").style.display="inline-block";$("submitBtn").disabled=false;
+  $("roundPill").innerHTML=`Round <b>${round}</b> / ${TOTAL_ROUNDS}`;
+  $("revealPill").textContent=revealLetters;$("liveScore").textContent="0";
+  // Mode tag
+  const tag=$("modeTag");
+  tag.textContent=currentMode.label;
+  tag.className="mode-tag "+currentMode.tag;
+  // Right panel: controls vs map
+  const rp=$("rightPanel"),mp=$("mapPanel");
+  if(currentMode.type==="continent"){
+    rp.style.display="none";mp.style.display="block";
+    initMap(currentMode.continentKey);
+  }else{
+    rp.style.display="block";mp.style.display="none";
+  }
+  renderDots();renderBoard();
+}
+
+/* ═══ PLAY SELECT UI ═══ */
+async function updatePlaySelectUI(){
+  const letter=getDailyLetter();
+  const cKey=getDailyContinent();
+  const cMeta=CONTINENT_META[cKey];
+  $("letterInfo").textContent=`Today: "${letter}" (${COUNTRIES.filter(c=>c[0].toUpperCase()===letter).length} countries)`;
+  $("continentInfo").textContent=`Today: ${cMeta.emoji} ${cMeta.name} (${(BY_CONTINENT[cKey]||[]).length} countries)`;
+  const lPlayed=await wasPlayedToday(`letter-${DAY}`);
+  const cPlayed=await wasPlayedToday(`continent-${DAY}`);
+  if(lPlayed){$("letterBadge").className="mode-badge played";$("letterBadge").textContent="✓ Played Today";}
+  if(cPlayed){$("continentBadge").className="mode-badge played";$("continentBadge").textContent="✓ Played Today";}
+}
+
+/* ═══ EVENT LISTENERS ═══ */
+async function copyShareCard(){
+  try{await navigator.clipboard.writeText($("shareCard").textContent);$("copyBtn").textContent="✅ Copied!";setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",2000);}
+  catch{$("copyBtn").textContent="Select text above";setTimeout(()=>$("copyBtn").textContent="📋 Copy Share Card",3000);}
+}
+$("submitBtn").addEventListener("click",submitRound);
+$("copyBtn").addEventListener("click",copyShareCard);
+$("finalViewBtn").addEventListener("click",()=>$("finalModal").classList.remove("open"));
+$("finalMenuBtn").addEventListener("click",()=>{$("finalModal").classList.remove("open");showScreen("screenMenu");});
+$("finalModal").addEventListener("click",e=>{if(e.target===$("finalModal"))$("finalModal").classList.remove("open");});
+$("roundModalClose").addEventListener("click",closeRoundModal);
+$("roundModal").addEventListener("click",e=>{if(e.target===$("roundModal"))closeRoundModal();});
+
+// Initialize play select screen on show
+const playObserver=new MutationObserver(()=>{if($("screenPlay").classList.contains("active"))updatePlaySelectUI();});
+playObserver.observe($("screenPlay"),{attributes:true,attributeFilter:["class"]});
+
+updatePlaySelectUI();
+
+
+/* ═══ EXPOSE GLOBALS (needed by onclick= attributes in HTML) ═══ */
+window.showScreen=showScreen;
+window.launchMode=launchMode;
+window.switchHsTab=switchHsTab;
+window.loadHighscores=loadHighscores;
+window.goToMenu=goToMenu;
 })();
 </script>
 </body>
